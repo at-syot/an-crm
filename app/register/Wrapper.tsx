@@ -4,7 +4,7 @@ import { PropsWithChildren } from "react";
 import Container from "@mui/material/Container";
 import { TextField, Stack, Box, Typography, Button } from "@mui/material";
 
-export default (props: PropsWithChildren<{}>) => {
+export default function Wrapper(props: PropsWithChildren<{}>) {
   return (
     <Container>
       <Box
@@ -25,4 +25,4 @@ export default (props: PropsWithChildren<{}>) => {
       </Stack>
     </Container>
   );
-};
+}
