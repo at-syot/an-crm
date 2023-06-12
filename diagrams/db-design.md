@@ -12,7 +12,7 @@ erDiagram
     }
 
     Ticket {
-      number(auto-generated) id
+      uuid id
       string name
       string detail
       string merchanName
@@ -28,6 +28,14 @@ erDiagram
       datetime updatedAt
     }
 
+    TicketLogs {
+      number(auto-generated) id
+      uuid ticketId
+
+      TicketStatus status
+      datetime createdAt
+      string createdBy
+    }
 
     TicketStatus {
       string new
@@ -57,4 +65,5 @@ erDiagram
     User ||--|{ Ticket : have-many
     Ticket ||--|{ TicketImage : have-many
     Ticket ||--|| IssueTopic : x
+    Ticket ||--|{ TicketLogs : x
 ```
