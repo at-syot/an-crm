@@ -1,6 +1,11 @@
-import Image from "next/image";
-import styles from "./page.module.css";
+import Container from "./Container";
 
 export default function Home() {
-  return <main>anp-crm is running..</main>;
+  return (
+    <main>
+      anp-crm is running..
+      <br />
+      <Container />
+    </main>
+  );
 }
