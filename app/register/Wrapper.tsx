@@ -3,8 +3,26 @@
 import { PropsWithChildren } from "react";
 import Container from "@mui/material/Container";
 import { TextField, Stack, Box, Typography, Button } from "@mui/material";
+import { useEffect } from "react";
+import liff from "@line/liff";
 
 export default function Wrapper(props: PropsWithChildren<{}>) {
+  useEffect(() => {
+    liff.ready.then(async () => {
+      console.log("os", liff.getOS());
+
+      try {
+        const accessToken = liff.getAccessToken();
+        if (accessToken) {
+          alert(accessToken);
+        }
+      } catch (err) {
+        console.log(err);
+      }
+    });
+
+    liff.init({ liffId: "1584232670-rogRLxEd" }).then();
+  }, []);
   return (
     <Container>
       <Box
