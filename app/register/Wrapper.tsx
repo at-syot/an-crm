@@ -1,21 +1,22 @@
 "use client";
 
-import { PropsWithChildren } from "react";
+import { PropsWithChildren, useState } from "react";
 import Container from "@mui/material/Container";
 import { TextField, Stack, Box, Typography, Button } from "@mui/material";
 import { useEffect } from "react";
 import liff from "@line/liff";
 
 export default function Wrapper(props: PropsWithChildren<{}>) {
+  const [runningOS, setRunningOS] = useState<string>();
+  const [lineAT, setLineAT] = useState<string>();
   useEffect(() => {
     liff.ready.then(async () => {
-      console.log("os", liff.getOS());
+      const os = liff.getOS();
+      setRunningOS(os?.toString());
 
       try {
         const accessToken = liff.getAccessToken();
-        if (accessToken) {
-          alert(accessToken);
-        }
+        setLineAT(accessToken?.toString());
       } catch (err) {
         console.log(err);
       }
@@ -23,8 +24,13 @@ export default function Wrapper(props: PropsWithChildren<{}>) {
 
     liff.init({ liffId: "1584232670-QOz40bj9" }).then();
   }, []);
+
   return (
     <Container>
+      <p>liff running on OS - {runningOS}</p>
+      <p>
+        liff user's access-token - {lineAT ? lineAT : "Can't get lineuser's AT"}
+      </p>
       <Box
         sx={{
           marginTop: "3rem",
