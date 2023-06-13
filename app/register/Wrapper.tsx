@@ -21,7 +21,7 @@ export default function Wrapper(props: PropsWithChildren<{}>) {
       }
     });
 
-    liff.init({ liffId: "1584232670-rogRLxEd" }).then();
+    liff.init({ liffId: "1584232670-QOz40bj9" }).then();
   }, []);
   return (
     <Container>
