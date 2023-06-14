@@ -3,49 +3,57 @@
 import liff from "@line/liff";
 import { useEffect, useState } from "react";
 
-export default function Container() {
-  const [runningOS, setRunningOS] = useState<string>();
-  const [lineAT, setLineAT] = useState<string>();
-  const [lineIDToken, setLineIDToken] = useState<string>();
+const useInitLiff = () => {
+  const [accessToken, setAccessToken] = useState<string>();
   useEffect(() => {
-    liff.ready.then(async () => {
-      const os = liff.getOS();
-      setRunningOS(os?.toString());
-
-      try {
-        const accessToken = liff.getAccessToken();
-        const idToken = liff.getIDToken();
-        setLineAT(accessToken?.toString());
-        setLineIDToken(idToken?.toString());
-
-        const body = {
-          phoneNo: "033372373",
-          email: "darkeningxenos@gmail.com",
-          lineAT: accessToken ?? "",
-          registeredAT: "",
-        };
-        fetch("/api/users/register", {
-          method: "POST",
-          body: JSON.stringify(body),
-          headers: { ["Content-Type"]: "application/json" },
-        })
-          .then((r) => r.json())
-          .then((r) => console.log("response", r));
-      } catch (err) {
-        console.log(err);
-      }
+    liff.ready.then(() => {
+      const accessToken = liff.getAccessToken();
+      setAccessToken(accessToken?.toString());
     });
 
     liff.init({ liffId: "1584232670-QOz40bj9" }).then();
   }, []);
 
-  useEffect(() => {}, []);
+  return { accessToken };
+};
+
+const useCheckLineUserExist = (lineAccessToken: string | undefined) => {
+  const [response, setResponse] = useState<any | null>();
+  const [err, setErr] = useState<any | null>();
+
+  useEffect(() => {
+    fetch("/api/users/check-existing", {
+      method: "POST",
+      headers: {
+        ["Content-Type"]: "application/json",
+        body: JSON.stringify({ lintAT: lineAccessToken }),
+      },
+    }).then((r) => {
+      if (r.status == 200) {
+        r.json().then((json) => setResponse(json));
+      } else {
+        setErr({});
+      }
+    });
+  }, []);
+
+  return { response, err };
+};
+
+export default function Container() {
+  const { accessToken } = useInitLiff();
+  const { response, err } = useCheckLineUserExist(accessToken);
+  if (err) {
+    return (
+      <p style={{ color: "red", fontWeight: "bold" }}>
+        Please allow line's permissions.
+      </p>
+    );
+  }
 
   return (
     <div>
-      <p>running os - {runningOS}</p>
-      <p>access-token - {lineAT}</p>
-      <p>id-token - {lineIDToken}</p>
+      <p>response {JSON.stringify(response, null, 2)}</p>
     </div>
   );
 }

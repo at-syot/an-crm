@@ -10,31 +10,30 @@ export default async function checkLineUserExist(
 ) {
   const { lineAT } = req.body;
   if (!lineAT) {
-    return res.status(422).end();
+    console.log("no line at");
+    return res.status(422).json(null);
   }
 
   try {
     const lineVerifyTokenURL = "https://api.line.me/oauth2/v2.1/verify";
-    const verifyToken = fetch(`${lineVerifyTokenURL}?access_token=${lineAT}`);
-
-    const getLineUserProfileURL = "https://api.line.me/oauth2/v2.1/userinfo";
-    const getLineUserProfile = fetch(getLineUserProfileURL, {
-      headers: { Authorization: `Bearer ${lineAT}` },
-    });
-
-    const responses = await Promise.allSettled([
-      verifyToken,
-      getLineUserProfile,
-    ]);
-    const responseErrors = responses.filter((r) => r.status == "rejected");
-    if (responseErrors.length > 0) {
-      responseErrors.forEach(console.log);
-      return res.status(500).end();
+    const verifyTokenResponse = await fetch(
+      `${lineVerifyTokenURL}?access_token=${lineAT}`
+    );
+    if (verifyTokenResponse.status != 200) {
+      return res.status(401).json({});
     }
 
-    const [_, profile] = responses;
-    console.log("------- response", responses);
-    return res.json({ message: "verify success.", profile });
+    const getLineUserProfileURL = "https://api.line.me/oauth2/v2.1/userinfo";
+    const getLineUserProfileResponse = await fetch(getLineUserProfileURL, {
+      headers: { Authorization: `Bearer ${lineAT}` },
+    });
+    if (getLineUserProfileResponse.status != 200) {
+      return res.status(401).json({});
+    }
+
+    const lineProfile = await getLineUserProfileResponse.json();
+
+    return res.json({ message: "verify success.", data: lineProfile });
   } catch (err) {
     console.log("catch error", err);
     return res.status(500).end();
