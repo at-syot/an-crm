@@ -17,6 +17,20 @@ export default function Container() {
         const idToken = liff.getIDToken();
         setLineAT(accessToken?.toString());
         setLineIDToken(idToken?.toString());
+
+        const body = {
+          phoneNo: "033372373",
+          email: "darkeningxenos@gmail.com",
+          lineAT: accessToken ?? "",
+          registeredAT: "",
+        };
+        fetch("/api/users/register", {
+          method: "POST",
+          body: JSON.stringify(body),
+          headers: { ["Content-Type"]: "application/json" },
+        })
+          .then((r) => r.json())
+          .then((r) => console.log("response", r));
       } catch (err) {
         console.log(err);
       }
@@ -24,6 +38,9 @@ export default function Container() {
 
     liff.init({ liffId: "1584232670-QOz40bj9" }).then();
   }, []);
+
+  useEffect(() => {}, []);
+
   return (
     <div>
       <p>running os - {runningOS}</p>

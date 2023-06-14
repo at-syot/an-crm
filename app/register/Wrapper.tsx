@@ -6,6 +6,10 @@ import { TextField, Stack, Box, Typography, Button } from "@mui/material";
 import { useEffect } from "react";
 import liff from "@line/liff";
 
+// TODO:
+// - get line user's access token (AT)
+// - send AT to server
+
 export default function Wrapper(props: PropsWithChildren<{}>) {
   const [runningOS, setRunningOS] = useState<string>();
   const [lineAT, setLineAT] = useState<string>();

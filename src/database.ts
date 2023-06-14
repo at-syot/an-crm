@@ -6,6 +6,11 @@ import type { QueryError } from "mysql2";
 
 let db: Pool;
 let apianypayDB: Pool;
+
+const DB_HOST = "anypay-db-tmp.cbkm16y0krx6.ap-southeast-1.rds.amazonaws.com";
+const DB_USER = "root";
+const DB_PASSWORD = "XReBXQka9wwFYnUlz8Uv";
+
 export const getDB = () => {
   if (db) {
     console.log("database[crm]: instance reused.");
@@ -14,11 +19,11 @@ export const getDB = () => {
 
   console.log("database[ctm]: createPool");
   db = mysql.createPool({
-    host: "localhost",
+    host: DB_HOST,
     port: 3306,
-    user: "root",
-    password: "password",
-    database: "anpcrm",
+    user: DB_USER,
+    password: DB_PASSWORD,
+    database: "anp_crm",
     waitForConnections: true,
     connectionLimit: 10,
     maxIdle: 10,
@@ -34,10 +39,10 @@ export const getAPIAnypayDB = () => {
   }
 
   apianypayDB = mysql.createPool({
-    host: "anypay-db-tmp.cbkm16y0krx6.ap-southeast-1.rds.amazonaws.com",
+    host: DB_HOST,
     port: 3306,
-    user: "root",
-    password: "XReBXQka9wwFYnUlz8Uv",
+    user: DB_USER,
+    password: DB_PASSWORD,
     database: "apianypay_db",
     waitForConnections: true,
     connectionLimit: 10,
