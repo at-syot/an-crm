@@ -1,11 +1,6 @@
 import Container from "./Container";
+import liff from "@line/liff";
 
-export default function Home() {
-  return (
-    <main>
-      anp-crm is running..
-      <br />
-      <Container />
-    </main>
-  );
+export default async function Home() {
+  return <Container />;
 }

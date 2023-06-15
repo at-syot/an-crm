@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev -p 80",
+    "dev": "next dev",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
@@ -25,6 +25,7 @@
     "eslint-config-next": "13.4.2",
     "formidable": "^2.1.1",
     "joi": "^17.9.2",
+    "jotai": "^2.2.0",
     "mysql2": "^3.3.3",
     "next": "13.4.2",
     "react": "18.2.0",

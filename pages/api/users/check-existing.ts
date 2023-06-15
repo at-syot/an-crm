@@ -1,16 +1,15 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import liff from "@line/liff";
+import * as db from "../../../src/database";
 
-// Usecase
-// use lineAT
-
+// TODO: big refactor!
+// - db connections [crmPool, apianypaydbPool]
 export default async function checkLineUserExist(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const { lineAT } = req.body;
   if (!lineAT) {
-    console.log("no line at");
+    console.log("invalid req.body");
     return res.status(422).json(null);
   }
 
@@ -20,7 +19,10 @@ export default async function checkLineUserExist(
       `${lineVerifyTokenURL}?access_token=${lineAT}`
     );
     if (verifyTokenResponse.status != 200) {
-      return res.status(401).json({});
+      console.log("verifyToken error", verifyTokenResponse);
+      return res.status(401).json({
+        errors: [{ message: "line access-token is invalid or expired" }],
+      });
     }
 
     const getLineUserProfileURL = "https://api.line.me/oauth2/v2.1/userinfo";
@@ -28,10 +30,24 @@ export default async function checkLineUserExist(
       headers: { Authorization: `Bearer ${lineAT}` },
     });
     if (getLineUserProfileResponse.status != 200) {
-      return res.status(401).json({});
+      console.log("getLineUserProfileResponse error", verifyTokenResponse);
+      return res
+        .status(401)
+        .json({ errors: [{ message: "get line profile error" }] });
     }
 
     const lineProfile = await getLineUserProfileResponse.json();
+    const { sub: lineId } = lineProfile;
+
+    const pool = db.getDB();
+    const conn = await pool.getConnection();
+    const [records] = await conn.query("SELECT * FROM users WHERE lineId = ?", [
+      lineId,
+    ]);
+    const users = records as Array<Record<string, any>>;
+    if (users.length == 0) {
+      return res.status(404).json({ errors: [{ message: "user not found" }] });
+    }
 
     return res.json({ message: "verify success.", data: lineProfile });
   } catch (err) {

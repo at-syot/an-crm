@@ -75,7 +75,7 @@ function TicketImages() {
 
   return (
     <Box style={{ marginTop: "1.5rem" }}>
-      <Typography>Related ticket's images ({ticketImages.length}/3)</Typography>
+      <Typography>Related ticket s images ({ticketImages.length}/3)</Typography>
       <br />
       <Stack gap={5}>
         {ticketImages.map((url, i) => {

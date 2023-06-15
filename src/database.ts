@@ -1,4 +1,3 @@
-import * as mysql2 from "mysql2";
 import mysql from "mysql2/promise";
 import type { Pool } from "mysql2/promise";
 

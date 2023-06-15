@@ -1,59 +1,53 @@
 "use client";
 
 import liff from "@line/liff";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
+import Register from "../src/components/Register";
+import { useAtom } from "jotai";
+import { renderingPageAtom, lineAccessTokenAtom } from "../src/states";
 
-const useInitLiff = () => {
-  const [accessToken, setAccessToken] = useState<string>();
-  useEffect(() => {
-    liff.ready.then(() => {
-      const accessToken = liff.getAccessToken();
-      setAccessToken(accessToken?.toString());
-    });
+const checkLineUserExist = (lineAccessToken: string) =>
+  fetch("/api/users/check-existing", {
+    method: "POST",
+    headers: {
+      ["Content-Type"]: "application/json",
+    },
+    body: JSON.stringify({ lineAT: lineAccessToken }),
+  }).then((r) => r.json());
 
-    liff.init({ liffId: "1584232670-QOz40bj9" }).then();
-  }, []);
-
-  return { accessToken };
-};
-
-const useCheckLineUserExist = (lineAccessToken: string | undefined) => {
-  const [response, setResponse] = useState<any | null>();
-  const [err, setErr] = useState<any | null>();
+const useInitLiffAndCheckUserExist = () => {
+  const [, setRenderingPage] = useAtom(renderingPageAtom);
+  const [, setLineAccessToken] = useAtom(lineAccessTokenAtom);
 
   useEffect(() => {
-    fetch("/api/users/check-existing", {
-      method: "POST",
-      headers: {
-        ["Content-Type"]: "application/json",
-        body: JSON.stringify({ lintAT: lineAccessToken }),
-      },
-    }).then((r) => {
-      if (r.status == 200) {
-        r.json().then((json) => setResponse(json));
-      } else {
-        setErr({});
-      }
-    });
-  }, []);
+    const initLiff = async () => {
+      liff.ready.then(async () => {
+        if (!liff.isLoggedIn()) {
+          liff.login();
+        } else {
+          const accessToken = liff.getAccessToken();
+          if (accessToken) {
+            const response = await checkLineUserExist(accessToken);
+            setRenderingPage(response.errors ? "Register" : "ViewTickets");
+            setLineAccessToken(accessToken);
+          }
+        }
+      });
 
-  return { response, err };
+      // liffID should be in the config
+      await liff.init({ liffId: "1584232670-QOz40bj9" });
+    };
+
+    initLiff();
+  }, []);
 };
 
 export default function Container() {
-  const { accessToken } = useInitLiff();
-  const { response, err } = useCheckLineUserExist(accessToken);
-  if (err) {
-    return (
-      <p style={{ color: "red", fontWeight: "bold" }}>
-        Please allow line's permissions.
-      </p>
-    );
-  }
-
-  return (
-    <div>
-      <p>response {JSON.stringify(response, null, 2)}</p>
-    </div>
-  );
+  useInitLiffAndCheckUserExist();
+  const [renderingPage] = useAtom(renderingPageAtom);
+  const [lineAT] = useAtom(lineAccessTokenAtom);
+  if (renderingPage == "Entry")
+    return <>checking line token & check user exist</>;
+  if (renderingPage == "Register") return <Register lineAT={lineAT ?? ""} />;
+  if (renderingPage == "ViewTickets") return <>ticket page</>;
 }
