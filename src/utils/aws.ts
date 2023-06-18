@@ -10,11 +10,9 @@ export const getS3Client = () => {
 
 // bucket's name 'manage-documents.anypay.co.th'
 // presigned url expired in 3600
-
 const bucketName = "manage-documents.anypay.co.th";
 const expiredIn = 3600;
 export const requestPresignedURL = (s3Client: S3Client, path: string) => {
-  console.log("s3client", s3Client);
   const command = new PutObjectCommand({
     Bucket: bucketName,
     Key: path,

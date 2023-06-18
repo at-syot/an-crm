@@ -8,12 +8,14 @@ import * as aws from "../../../src/utils/aws";
 import joi from "joi";
 import { v4 } from "uuid";
 
-const schema = joi.object({
-  name: joi.string().required(),
-  merchantName: joi.string().required(),
-  issueTopicId: joi.string().required(),
-  detail: joi.string().required(),
-});
+const schema = joi
+  .object({
+    ticketName: joi.string().required(),
+    // merchantName: joi.string().required(),
+    issueId: joi.string().required(),
+    detail: joi.string().allow("").required(),
+  })
+  .allow();
 
 export const config = {
   api: { bodyParser: false },
@@ -42,41 +44,47 @@ const createTicket: HandlerFn = async (req, res) => {
     const { fields, files } = await reqUtils.parseFormData(req);
     const { error } = schema.validate(fields);
     if (error) {
-      return res.status(422).send("");
+      console.log("error", error);
+      return res.status(422).json(null);
     }
 
-    const { issueTopicId, detail, name, merchantName } = fields;
+    const presignedURLs = uploadFilesToS3(files);
+    return res.json({ message: "upload success", urls: presignedURLs });
+
+    const { issueId, detail, ticketName } = fields;
+
     // create ticket
     const ticketId = v4();
     const saveTicketSQL = `
       INSERT INTO tickets (
         id,
-        merchantName, 
         name, 
         detail, 
         issueTopicId,
         currentStatus,
         cAt
-      ) VALUES (
-        ?, ?, ?, ?, ?, ?, ?
-      )
-    `;
+      ) VALUES (?, ?, ?, ?, ?, ?)`;
     const saveTicketSQLValues = [
       ticketId,
-      "fakeMerchantName",
-      name,
+      ticketName,
       detail,
-      issueTopicId,
+      issueId,
       "new",
       new Date(),
     ];
 
     // create ticket log record
     const ticketRecordSQL = `
-      INSERT INTO ticket_logs (status, cAt, ticketId) VALUES (?, ?, ?)
-    `;
+      INSERT INTO ticket_logs (status, cAt, ticketId) VALUES (?, ?, ?)`;
     const ticketRecordSQLValues = ["new", new Date(), ticketId];
 
+    // get latest saved ticket record sql
+    const selectSavedTicketSQL = `
+      SELECT * FROM tickets
+      WHERE id = ? LIMIT 1`;
+    const selectSavedTicketSQLValues = [ticketId];
+
+    // start transaction's process
     const pool = db.getDB();
     const conn = await pool.getConnection();
     await conn.beginTransaction();
@@ -84,7 +92,14 @@ const createTicket: HandlerFn = async (req, res) => {
     await conn.execute(ticketRecordSQL, ticketRecordSQLValues);
     await conn.commit();
 
-    return res.status(200).json({ message: "read form data success" });
+    const [indbTicket] = await conn.query(
+      selectSavedTicketSQL,
+      selectSavedTicketSQLValues
+    );
+
+    return res
+      .status(200)
+      .json({ message: "create ticket sucess", data: indbTicket });
   } catch (err) {
     console.log("err", err);
     return res.status(500).send("");
@@ -92,6 +107,7 @@ const createTicket: HandlerFn = async (req, res) => {
 };
 
 const uploadFilesToS3 = (files: Files) => {
+  const presignedURLs: string[] = [];
   Object.entries(files).forEach(async ([imageKeyName, image]) => {
     const usableImage = image as File;
 
@@ -133,6 +149,10 @@ const uploadFilesToS3 = (files: Files) => {
 
     const s3Client = aws.getS3Client();
     const url = await aws.requestPresignedURL(s3Client, toUploadImagePath);
-    console.log(`toUploadImagePath -> ${toUploadImagePath}, url -> ${url}`);
+    presignedURLs.push(
+      `toUploadImagePath: ${toUploadImagePath} -- presignedURL: ${url}`
+    );
   });
+
+  return presignedURLs;
 };

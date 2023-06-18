@@ -1,54 +1,18 @@
-"use client";
+import { Box, Stack, Typography } from "@mui/material";
+import { ChangeEvent, useEffect, useRef, useState } from "react";
+import styles from "./styles.module.css";
 
-import getConfig from "next/config";
-import {
-  Box,
-  Button,
-  Divider,
-  InputBase,
-  MenuItem,
-  Stack,
-  TextField,
-} from "@mui/material";
-import Container from "@mui/material/Container";
-import Typography from "@mui/material/Typography";
-import styles from "./TicketPage.module.css";
-import { ChangeEvent, useEffect, useState } from "react";
-
-export default function TicketPage() {
-  const config = getConfig();
-
-  return (
-    <Container style={{ marginTop: "2rem" }}>
-      <Stack justifyContent="center" alignItems="center">
-        <Typography variant="h4">Create Ticket</Typography>
-      </Stack>
-      <Stack style={{ marginTop: "2rem" }} spacing={3}>
-        <TextField
-          value={"ticket-id"}
-          disabled
-          size="small"
-          label="Ticket-id"
-        />
-        <TextField select size="small" label="Select issue">
-          <MenuItem key={""}>test</MenuItem>
-          <MenuItem key={"a"}>menu 2</MenuItem>
-        </TextField>
-        <TextField multiline maxRows={4} label="Description" size="medium" />
-        <Divider />
-      </Stack>
-
-      <TicketImages />
-    </Container>
-  );
-}
-
-function TicketImages() {
+type CreateTicketImagesProps = {
+  onImagesSelected: (images: Record<string, File>) => void;
+};
+export default function CreateTicketImages(props: CreateTicketImagesProps) {
+  const selectedImagesRef = useRef<Record<string, File>>({});
   const [selectedImages, setSelectedImages] = useState<Record<string, boolean>>(
     {}
   );
   const ticketImages = Object.keys(selectedImages);
 
+  // handle input file on change
   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { files } = e.target;
     if (!files) return;
@@ -60,10 +24,18 @@ function TicketImages() {
       return;
     }
 
+    // create temporary file's url from file
     const objectURL = URL.createObjectURL(files[0]);
-    setSelectedImages((record) => {
-      return { ...record, [objectURL]: true };
+
+    // append to selectedImageRef
+    selectedImagesRef.current[objectURL] = files[0];
+
+    // append to component state for rendering
+    setSelectedImages((prevSelectedImages) => {
+      return { ...prevSelectedImages, [objectURL]: true };
     });
+
+    props.onImagesSelected(selectedImagesRef.current);
   };
 
   const handleClearImgBtn = (url: string) => {

@@ -1,3 +1,13 @@
+.actions {
+  flex-direction: row;
+}
+
+.actions > .closeBtnBox {
+  display: flex;
+  justify-content: flex-end;
+  flex-grow: 1;
+}
+
 .selectfile {
   width: 100%;
   max-width: 100%;
