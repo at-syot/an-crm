@@ -48,6 +48,7 @@ const createTicket: HandlerFn = async (req, res) => {
       return res.status(422).json(null);
     }
 
+    // ---- get presignedURL from aws testing
     const presignedURLs = uploadFilesToS3(files);
     return res.json({ message: "upload success", urls: presignedURLs });
 
@@ -62,14 +63,16 @@ const createTicket: HandlerFn = async (req, res) => {
         detail, 
         issueTopicId,
         currentStatus,
-        cAt
-      ) VALUES (?, ?, ?, ?, ?, ?)`;
+        cAt,
+        uAt
+      ) VALUES (?, ?, ?, ?, ?, ?, ?)`;
     const saveTicketSQLValues = [
       ticketId,
       ticketName,
       detail,
       issueId,
       "new",
+      new Date(),
       new Date(),
     ];
 

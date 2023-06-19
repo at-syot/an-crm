@@ -14,12 +14,11 @@ import styles from "./styles.module.css";
 import { useRef, useState } from "react";
 
 import { useAtom } from "jotai";
-import { renderingPageAtom } from "../../states";
+import { fetchingAtom, renderingPageAtom } from "../../states";
 
 import CreateTicketSelectIssue from "./CreateTicketSelectIssue";
 import { defaultIssueValue } from "./CreateTicketSelectIssue";
 import CreateTicketImages from "./CreateTicketImages";
-import { object } from "joi";
 
 export default function CreateTicketPage() {
   const [invalidTicketName, setInvalidTicketName] = useState<boolean>(false);
@@ -116,6 +115,7 @@ type ValidationResult = {
   errors: { ticketName: boolean; issueId: boolean };
 };
 const useOnSubmitActions = () => {
+  const [fetching, setFetching] = useAtom(fetchingAtom);
   const validate: (values: CreateTicketFormValues) => ValidationResult = ({
     ticketName,
     issueId,
@@ -150,15 +150,18 @@ const useOnSubmitActions = () => {
       new FormData()
     );
 
+    setFetching(true);
     const response = await fetch("/api/tickets", {
       method: "POST",
       body: formData,
     });
+    setFetching(false);
     const responseJson = await response.json();
     if (response.status !== 200) {
       console.log("error", response.status);
       return;
     }
+
     console.log("responseJson", responseJson);
   };
 
