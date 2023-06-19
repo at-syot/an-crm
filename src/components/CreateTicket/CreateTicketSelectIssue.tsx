@@ -75,7 +75,7 @@ const useFetchIssueTopicsData = () => {
         })
         .then((issueTopicsAtom) => setIssueTopics(issueTopicsAtom));
     });
-  }, []);
+  });
 
   return { issueTopics };
 };

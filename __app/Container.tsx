@@ -42,7 +42,7 @@ const useInitLiffAndCheckUserExist = () => {
     };
 
     initLiff();
-  }, []);
+  });
 };
 
 export default function Container() {
@@ -55,4 +55,5 @@ export default function Container() {
   if (renderingPage == "Register") return <Register lineAT={lineAT ?? ""} />;
   if (renderingPage == "ViewTickets") return <Tickets />;
   if (renderingPage == "CreateTicket") return <CreateTicketPage />;
+  return <></>;
 }
