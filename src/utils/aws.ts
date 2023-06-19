@@ -29,6 +29,7 @@ export const requestPresignedURL = (s3Client: S3Client, path: string) => {
 
 export const uploadFilesToS3 = async (
   files: Files,
+  rootPath: string,
   presignedFolderPath: string
 ) => {
   const constructedPresignedFolderPath =
@@ -43,7 +44,7 @@ export const uploadFilesToS3 = async (
       ext
     );
     const signedURL = await generatePresignedURL(uploadingImagePath);
-    // await deleteUploadingImageTempPath(uploadingImagePath);
+    await deleteUploadRootPath(rootPath);
 
     return signedURL;
   });
@@ -55,7 +56,7 @@ const createTempPresignedFolderPathIfNeed = async (
   presignedFolderPath: string
 ) => {
   if (!fs.existsSync(presignedFolderPath)) {
-    await fs.promises.mkdir(presignedFolderPath);
+    await fs.promises.mkdir(presignedFolderPath, { recursive: true });
   }
   return presignedFolderPath;
 };
@@ -84,4 +85,6 @@ const generatePresignedURL = (path: string) => {
   return requestPresignedURL(client, path);
 };
 
-const deleteUploadingImageTempPath = (path: string) => fs.promises.unlink(path);
+const deleteUploadRootPath = (path: string) => {
+  console.log("uploaded root path", path);
+};

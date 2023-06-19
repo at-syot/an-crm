@@ -49,7 +49,7 @@ const createTicket: HandlerFn = async (req, res) => {
     }
 
     // ---- get presignedURL from aws testing
-    const presignedURLs = await uploadFilesToS3(files);
+    const presignedURLs = await uploadTicketImagesToS3("fake-ticketid", files);
     return res.json({ message: "upload success", urls: presignedURLs });
 
     const { issueId, detail, ticketName } = fields;
@@ -109,15 +109,12 @@ const createTicket: HandlerFn = async (req, res) => {
   }
 };
 
-const uploadFilesToS3 = (files: Files) => {
-  const apiUploadFolderPath = "anypay-crm";
-  const ticketFolderPath = "tickets/ticketid-fakeid-1";
-  const ticketImagesFolderPath = path.join(
-    process.cwd(),
-    apiUploadFolderPath,
-    ticketFolderPath,
-    "images"
-  );
-
-  return aws.uploadFilesToS3(files, ticketImagesFolderPath);
+const uploadTicketImagesToS3 = (
+  ticketId: string = "fake-ticketid",
+  files: Files
+) => {
+  const rootFolder = path.join(process.cwd(), "anypay-crm");
+  const ticketFolder = `tickets/${ticketId}`;
+  const ticketImagesFolderPath = path.join(rootFolder, ticketFolder, "images");
+  return aws.uploadFilesToS3(files, rootFolder, ticketImagesFolderPath);
 };
