@@ -49,7 +49,7 @@ const createTicket: HandlerFn = async (req, res) => {
     }
 
     // ---- get presignedURL from aws testing
-    const presignedURLs = uploadFilesToS3(files);
+    const presignedURLs = await uploadFilesToS3(files);
     return res.json({ message: "upload success", urls: presignedURLs });
 
     const { issueId, detail, ticketName } = fields;
@@ -110,53 +110,14 @@ const createTicket: HandlerFn = async (req, res) => {
 };
 
 const uploadFilesToS3 = (files: Files) => {
-  const presignedURLs: string[] = [];
-  Object.entries(files).forEach(async ([imageKeyName, image]) => {
-    const usableImage = image as File;
-    console.log("usableImage", usableImage);
+  const apiUploadFolderPath = "anypay-crm";
+  const ticketFolderPath = "tickets/ticketid-fakeid-1";
+  const ticketImagesFolderPath = path.join(
+    process.cwd(),
+    apiUploadFolderPath,
+    ticketFolderPath,
+    "images"
+  );
 
-    const { mimetype, originalFilename, filepath } = usableImage;
-
-    // get extension
-    let ext = "png";
-    if (mimetype) {
-      const splited = mimetype.split("/");
-      ext = splited[splited.length - 1];
-    }
-
-    // presigned folder: anypay-crm/tickets/ticketid-[]/images/
-    const apiUploadFolderPath = "anypay-crm";
-    const ticketFolderPath = "tickets/ticketid-fakeid-1";
-
-    // check ticket images folder exist
-    const ticketImagesFolderPath = path.join(
-      process.cwd(),
-      apiUploadFolderPath,
-      ticketFolderPath,
-      "images"
-    );
-
-    // create ticket images folder if need
-    if (!fs.existsSync(ticketImagesFolderPath)) {
-      fs.mkdirSync(ticketImagesFolderPath, { recursive: true });
-      console.log(`path: ${ticketImagesFolderPath} is created`);
-    }
-
-    // copy temp file to
-    const toUploadImagePath = path.join(
-      ticketImagesFolderPath,
-      `${imageKeyName}.${ext}`
-    );
-    fs.copyFileSync(usableImage.filepath, toUploadImagePath);
-    console.log(`copy src: ${usableImage.filepath} --> ${toUploadImagePath}`);
-
-    const s3Client = aws.getS3Client();
-    const url = await aws.requestPresignedURL(s3Client, toUploadImagePath);
-    console.log(`generated presignedURL: ${url}`);
-    presignedURLs.push(
-      `toUploadImagePath: ${toUploadImagePath} -- presignedURL: ${url}`
-    );
-  });
-
-  return presignedURLs;
+  return aws.uploadFilesToS3(files, ticketImagesFolderPath);
 };
