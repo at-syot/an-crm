@@ -44,12 +44,11 @@ export const uploadFilesToS3 = async (
       ext
     );
     const signedURL = await generatePresignedURL(uploadingImagePath);
-    console.log("deleting root path", rootPath);
+    await uploadPresignedURLToS3(signedURL);
     await deleteUploadRootPath(rootPath);
-
-    return signedURL;
   });
-  return Promise.all(uploads);
+
+  await Promise.all(uploads);
 };
 
 // ------------ internal ------------
@@ -86,5 +85,11 @@ const generatePresignedURL = (path: string) => {
   return requestPresignedURL(client, path);
 };
 
+const uploadPresignedURLToS3 = async (url: string) => {
+  const response = await fetch(url, { method: "PUT" });
+  const json = await response.json();
+  console.log("uploaded response", response);
+  console.log("uploaded json", json);
+};
 const deleteUploadRootPath = (path: string) =>
   fs.promises.rm(path, { recursive: true, force: true });
