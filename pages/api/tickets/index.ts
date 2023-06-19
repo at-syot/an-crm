@@ -113,9 +113,7 @@ const uploadFilesToS3 = (files: Files) => {
   const presignedURLs: string[] = [];
   Object.entries(files).forEach(async ([imageKeyName, image]) => {
     const usableImage = image as File;
-
-    console.log("temp written file path", usableImage.filepath);
-    console.log("new fileName", usableImage.newFilename);
+    console.log("usableImage", usableImage);
 
     const { mimetype, originalFilename, filepath } = usableImage;
 
@@ -128,7 +126,7 @@ const uploadFilesToS3 = (files: Files) => {
 
     // presigned folder: anypay-crm/tickets/ticketid-[]/images/
     const apiUploadFolderPath = "anypay-crm";
-    const ticketFolderPath = "tickets/ticketid-fakeid";
+    const ticketFolderPath = "tickets/ticketid-fakeid-1";
 
     // check ticket images folder exist
     const ticketImagesFolderPath = path.join(
@@ -141,6 +139,7 @@ const uploadFilesToS3 = (files: Files) => {
     // create ticket images folder if need
     if (!fs.existsSync(ticketImagesFolderPath)) {
       fs.mkdirSync(ticketImagesFolderPath, { recursive: true });
+      console.log(`path: ${ticketImagesFolderPath} is created`);
     }
 
     // copy temp file to
@@ -149,9 +148,11 @@ const uploadFilesToS3 = (files: Files) => {
       `${imageKeyName}.${ext}`
     );
     fs.copyFileSync(usableImage.filepath, toUploadImagePath);
+    console.log(`copy src: ${usableImage.filepath} --> ${toUploadImagePath}`);
 
     const s3Client = aws.getS3Client();
     const url = await aws.requestPresignedURL(s3Client, toUploadImagePath);
+    console.log(`generated presignedURL: ${url}`);
     presignedURLs.push(
       `toUploadImagePath: ${toUploadImagePath} -- presignedURL: ${url}`
     );
