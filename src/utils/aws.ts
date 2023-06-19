@@ -44,6 +44,7 @@ export const uploadFilesToS3 = async (
       ext
     );
     const signedURL = await generatePresignedURL(uploadingImagePath);
+    console.log("deleting root path", rootPath);
     await deleteUploadRootPath(rootPath);
 
     return signedURL;
@@ -85,6 +86,5 @@ const generatePresignedURL = (path: string) => {
   return requestPresignedURL(client, path);
 };
 
-const deleteUploadRootPath = (path: string) => {
-  console.log("uploaded root path", path);
-};
+const deleteUploadRootPath = (path: string) =>
+  fs.promises.rm(path, { recursive: true, force: true });
