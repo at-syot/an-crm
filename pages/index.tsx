@@ -20,7 +20,6 @@ const useInitLiffAndCheckUserExist = () => {
   const [, setLineAccessToken] = useAtom(lineAccessTokenAtom);
 
   useEffect(() => {
-    console.log("called");
     import("@line/liff").then(async ({ liff }) => {
       liff.ready.then(async () => {
         if (!liff.isLoggedIn()) {
@@ -37,26 +36,6 @@ const useInitLiffAndCheckUserExist = () => {
 
       await liff.init({ liffId: "1584232670-QOz40bj9" });
     });
-
-    // const initLiff = async (liff) => {
-    //   liff.ready.then(async () => {
-    //     if (!liff.isLoggedIn()) {
-    //       liff.login();
-    //     } else {
-    //       const accessToken = liff.getAccessToken();
-    //       if (accessToken) {
-    //         const response = await checkLineUserExist(accessToken);
-    //         setRenderingPage(response.errors ? "Register" : "ViewTickets");
-    //         setLineAccessToken(accessToken);
-    //       }
-    //     }
-    //   });
-
-    //   // liffID should be in the config
-    //   await liff.init({ liffId: "1584232670-QOz40bj9" });
-    // };
-
-    // initLiff();
   }, []);
 };
 
