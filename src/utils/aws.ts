@@ -88,7 +88,9 @@ const generatePresignedURL = (path: string) => {
 
 const uploadPresignedURLToS3 = async (url: string, file: File) => {
   console.log("signedURL", url);
-  const response = await axios.put(url);
+  const response = await axios.put(url, null, {
+    headers: { "Content-Length": file.size },
+  });
   console.log("status", response.status);
   console.log("", response.statusText);
 
