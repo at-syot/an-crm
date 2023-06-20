@@ -3,7 +3,6 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
 import path from "path";
 import type { Files, File } from "formidable";
-import { build } from "joi";
 
 let s3client: S3Client;
 export const getS3Client = () => {
@@ -92,9 +91,10 @@ const uploadPresignedURLToS3 = async (url: string, file: File) => {
       ["Content-Length"]: String(file.size),
     },
   });
-  const json = await response.json();
+  const plain = await response.text();
   console.log("uploaded response", response);
-  console.log("uploaded json", json);
+  console.log("plain", plain);
+  // console.log("uploaded json", json);
 };
 
 const deleteUploadRootPath = (path: string) =>
