@@ -44,7 +44,7 @@ export const uploadFilesToS3 = async (
       ext
     );
     const signedURL = await generatePresignedURL(uploadingImagePath);
-    await uploadPresignedURLToS3(signedURL);
+    await uploadPresignedURLToS3(signedURL, image);
     await deleteUploadRootPath(rootPath);
   });
 
@@ -85,11 +85,17 @@ const generatePresignedURL = (path: string) => {
   return requestPresignedURL(client, path);
 };
 
-const uploadPresignedURLToS3 = async (url: string) => {
-  const response = await fetch(url, { method: "PUT" });
+const uploadPresignedURLToS3 = async (url: string, file: File) => {
+  const response = await fetch(url, {
+    method: "PUT",
+    headers: {
+      ["Content-Length"]: String(file.size),
+    },
+  });
   const json = await response.json();
   console.log("uploaded response", response);
   console.log("uploaded json", json);
 };
+
 const deleteUploadRootPath = (path: string) =>
   fs.promises.rm(path, { recursive: true, force: true });
