@@ -1,5 +1,6 @@
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import fetch from "node-fetch";
 import fs from "fs";
 import path from "path";
 import type { Files, File } from "formidable";
@@ -87,9 +88,6 @@ const generatePresignedURL = (path: string) => {
 const uploadPresignedURLToS3 = async (url: string, file: File) => {
   const response = await fetch(url, {
     method: "PUT",
-    headers: {
-      ["Content-Length"]: String(file.size),
-    },
   });
   const plain = await response.text();
   console.log("uploaded response", response);
