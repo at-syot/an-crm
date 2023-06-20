@@ -45,7 +45,7 @@ export const uploadFilesToS3 = async (
     );
     const signedURL = await generatePresignedURL(uploadingImagePath);
     await uploadPresignedURLToS3(signedURL, image);
-    await deleteUploadRootPath(rootPath);
+    // await deleteUploadRootPath(rootPath);
   });
 
   await Promise.all(uploads);
@@ -86,9 +86,8 @@ const generatePresignedURL = (path: string) => {
 };
 
 const uploadPresignedURLToS3 = async (url: string, file: File) => {
-  const response = await fetch(url, {
-    method: "PUT",
-  });
+  console.log("signedURL", url);
+  const response = await fetch(url, { method: "PUT" });
   const plain = await response.text();
   console.log("uploaded response", response);
   console.log("plain", plain);
