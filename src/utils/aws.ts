@@ -10,6 +10,7 @@ let s3client: S3Client;
 export const getS3Client = () => {
   if (s3client) return s3client;
   s3client = new S3Client({ region: "ap-southeast-1" });
+  console.log("s3 config", s3client.config);
   return s3client;
 };
 
@@ -44,8 +45,9 @@ export const uploadFilesToS3 = async (
       key,
       ext
     );
-    const signedURL = await generatePresignedURL(uploadingImagePath);
-    await uploadPresignedURLToS3(signedURL, image);
+    // const signedURL = await generatePresignedURL(uploadingImagePath);
+    await uploadPresignedURLToS3(uploadingImagePath, "ticket-image.png");
+
     // await deleteUploadRootPath(rootPath);
   });
 
@@ -86,21 +88,18 @@ const generatePresignedURL = (path: string) => {
   return requestPresignedURL(client, path);
 };
 
-const uploadPresignedURLToS3 = async (url: string, file: File) => {
-  console.log("signedURL", url);
-  const response = await axios.put(url, null, {
-    headers: { "Content-Length": file.size },
+const uploadPresignedURLToS3 = async (
+  localFilePath: string,
+  toS3Path: string
+) => {
+  const client = getS3Client();
+  const command = new PutObjectCommand({
+    Body: localFilePath,
+    Bucket: bucketName,
+    Key: toS3Path,
   });
-  console.log("status", response.status);
-  console.log("", response.statusText);
-
-  // const response = await fetch(url, {
-  //   method: "PUT",
-  //   headers: { ["Content-Length"]: file.size },
-  // });
-  // const plain = await response.text();
-  // console.log("uploaded response", response);
-  // console.log("uploaded json", json);
+  const response = await client.send(command);
+  console.log("uploading response", response);
 };
 
 const deleteUploadRootPath = (path: string) =>
