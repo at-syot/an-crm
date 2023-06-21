@@ -47,7 +47,7 @@ export const uploadFilesToS3 = async (
       ext
     );
     // const signedURL = await generatePresignedURL(uploadingImagePath);
-    await uploadPresignedURLToS3(filepath, originalFilename ?? "");
+    await uploadPresignedURLToS3(uploadingImagePath, originalFilename ?? "");
 
     // await deleteUploadRootPath(rootPath);
   });
