@@ -29,42 +29,17 @@ export const requestPresignedURL = (s3Client: S3Client, path: string) => {
   });
 };
 
-export const uploadFilesToS3 = async (
-  files: Files,
-  rootPath: string,
-  presignedFolderPath: string
-) => {
-  const constructedPresignedFolderPath =
-    await createTempPresignedFolderPathIfNeed(presignedFolderPath);
+export const uploadFilesToS3 = async (files: Files, s3Dir: string) => {
   const uploads = Object.entries(files).map(async ([key, _image]) => {
     const image = _image as File;
-    const { originalFilename, filepath } = image;
-    const ext = extractFileExt(image);
-    const uploadingImagePath = await buildUploadingImageTempPath(
-      image,
-      constructedPresignedFolderPath,
-      key,
-      ext
-    );
-    // const signedURL = await generatePresignedURL(uploadingImagePath);
-    await uploadPresignedURLToS3(image.filepath, originalFilename ?? "");
-
-    // await deleteUploadRootPath(rootPath);
+    await uploadToS3(image.filepath, generateS3FilePath(image, s3Dir));
+    await deleteTempFile(image);
   });
 
   await Promise.all(uploads);
 };
 
 // ------------ internal ------------
-const createTempPresignedFolderPathIfNeed = async (
-  presignedFolderPath: string
-) => {
-  if (!fs.existsSync(presignedFolderPath)) {
-    await fs.promises.mkdir(presignedFolderPath, { recursive: true });
-  }
-  return presignedFolderPath;
-};
-
 const extractFileExt = (file: File) =>
   file.mimetype
     ? (() => {
@@ -73,21 +48,10 @@ const extractFileExt = (file: File) =>
       })()
     : "png";
 
-const buildUploadingImageTempPath = async (
-  file: File,
-  srcPath: string,
-  fileName: string,
-  ext: string
-) => {
-  const uploadingImagePath = path.join(srcPath, `${fileName}.${ext}`);
-  await fs.promises.copyFile(file.filepath, uploadingImagePath);
-  return uploadingImagePath;
-};
+const generateS3FilePath = (file: File, s3Dir: string) =>
+  path.join(s3Dir, file.originalFilename ?? "");
 
-const uploadPresignedURLToS3 = async (
-  localFilePath: string,
-  toS3Path: string
-) => {
+const uploadToS3 = async (localFilePath: string, toS3Path: string) => {
   const client = getS3Client();
   const fileStream = fs.createReadStream(localFilePath);
   const command = new PutObjectCommand({
@@ -98,5 +62,4 @@ const uploadPresignedURLToS3 = async (
   await client.send(command);
 };
 
-const deleteUploadRootPath = (path: string) =>
-  fs.promises.rm(path, { recursive: true, force: true });
+const deleteTempFile = (file: File) => fs.promises.rm(file.filepath);

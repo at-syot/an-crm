@@ -116,5 +116,5 @@ const uploadTicketImagesToS3 = (
   const rootFolder = "anypay-crm";
   const ticketFolder = `tickets/${ticketId}`;
   const ticketImagesFolderPath = path.join(rootFolder, ticketFolder, "images");
-  return aws.uploadFilesToS3(files, rootFolder, ticketImagesFolderPath);
+  return aws.uploadFilesToS3(files, ticketImagesFolderPath);
 };
