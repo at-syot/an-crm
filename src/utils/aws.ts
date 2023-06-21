@@ -38,6 +38,7 @@ export const uploadFilesToS3 = async (
     await createTempPresignedFolderPathIfNeed(presignedFolderPath);
   const uploads = Object.entries(files).map(async ([key, _image]) => {
     const image = _image as File;
+    const { originalFilename, filepath } = image;
     const ext = extractFileExt(image);
     const uploadingImagePath = await buildUploadingImageTempPath(
       image,
@@ -46,7 +47,7 @@ export const uploadFilesToS3 = async (
       ext
     );
     // const signedURL = await generatePresignedURL(uploadingImagePath);
-    await uploadPresignedURLToS3(uploadingImagePath, "ticket-image.png");
+    await uploadPresignedURLToS3(filepath, originalFilename ?? "");
 
     // await deleteUploadRootPath(rootPath);
   });
@@ -83,16 +84,13 @@ const buildUploadingImageTempPath = async (
   return uploadingImagePath;
 };
 
-const generatePresignedURL = (path: string) => {
-  const client = getS3Client();
-  return requestPresignedURL(client, path);
-};
-
 const uploadPresignedURLToS3 = async (
   localFilePath: string,
   toS3Path: string
 ) => {
   const client = getS3Client();
+  console.log("localFilePath", localFilePath);
+  console.log("toS3Path", toS3Path);
   const command = new PutObjectCommand({
     Body: localFilePath,
     Bucket: bucketName,
