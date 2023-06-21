@@ -47,7 +47,7 @@ export const uploadFilesToS3 = async (
       ext
     );
     // const signedURL = await generatePresignedURL(uploadingImagePath);
-    await uploadPresignedURLToS3(uploadingImagePath, originalFilename ?? "");
+    await uploadPresignedURLToS3(image.filepath, originalFilename ?? "");
 
     // await deleteUploadRootPath(rootPath);
   });
@@ -90,16 +90,12 @@ const uploadPresignedURLToS3 = async (
 ) => {
   const client = getS3Client();
   const fileStream = fs.createReadStream(localFilePath);
-  console.log("localFilePath", localFilePath);
-  console.log("fileStream", fileStream);
-  console.log("toS3Path", toS3Path);
   const command = new PutObjectCommand({
     Body: fileStream,
     Bucket: bucketName,
     Key: toS3Path,
   });
-  const response = await client.send(command);
-  console.log("uploading response", response);
+  await client.send(command);
 };
 
 const deleteUploadRootPath = (path: string) =>
