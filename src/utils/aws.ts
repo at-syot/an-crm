@@ -89,13 +89,14 @@ const uploadPresignedURLToS3 = async (
   toS3Path: string
 ) => {
   const client = getS3Client();
+  const fileStream = fs.createReadStream(localFilePath);
   console.log("localFilePath", localFilePath);
+  console.log("fileStream", fileStream);
   console.log("toS3Path", toS3Path);
   const command = new PutObjectCommand({
-    Body: localFilePath,
+    Body: fileStream,
     Bucket: bucketName,
     Key: toS3Path,
-    ContentType: "multipart/form-data",
   });
   const response = await client.send(command);
   console.log("uploading response", response);
