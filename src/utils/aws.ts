@@ -10,7 +10,6 @@ let s3client: S3Client;
 export const getS3Client = () => {
   if (s3client) return s3client;
   s3client = new S3Client({ region: "ap-southeast-1" });
-  console.log("s3 config", s3client.config);
   return s3client;
 };
 
@@ -59,7 +58,8 @@ const uploadToS3 = async (localFilePath: string, toS3Path: string) => {
     Bucket: bucketName,
     Key: toS3Path,
   });
-  await client.send(command);
+  const response = await client.send(command);
+  console.log("resp", response);
 };
 
 const deleteTempFile = (file: File) => fs.promises.rm(file.filepath);
