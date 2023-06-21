@@ -95,7 +95,7 @@ const uploadPresignedURLToS3 = async (
     Body: localFilePath,
     Bucket: bucketName,
     Key: toS3Path,
-    ContentEncoding: "gzip, deflate",
+    ContentEncoding: "gzip",
   });
   const response = await client.send(command);
   console.log("uploading response", response);
