@@ -49,8 +49,8 @@ const createTicket: HandlerFn = async (req, res) => {
     }
 
     // ---- get presignedURL from aws testing
-    const presignedURLs = await uploadTicketImagesToS3("fake-ticketid", files);
-    return res.json({ message: "upload success", urls: presignedURLs });
+    const s3URIs = await uploadTicketImagesToS3("fake-ticketid", files);
+    return res.json({ message: "upload success", s3URIs: s3URIs });
 
     const { issueId, detail, ticketName } = fields;
 

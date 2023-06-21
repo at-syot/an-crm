@@ -31,11 +31,13 @@ export const requestPresignedURL = (s3Client: S3Client, path: string) => {
 export const uploadFilesToS3 = async (files: Files, s3Dir: string) => {
   const uploads = Object.entries(files).map(async ([key, _image]) => {
     const image = _image as File;
-    await uploadToS3(image.filepath, generateS3FilePath(image, s3Dir));
+    const s3FilePath = generateS3FilePath(image, s3Dir);
+    await uploadToS3(image.filepath, s3FilePath);
     await deleteTempFile(image);
+    return `s3://${bucketName}/${s3FilePath}`;
   });
 
-  await Promise.all(uploads);
+  return await Promise.all(uploads);
 };
 
 // ------------ internal ------------
@@ -58,8 +60,7 @@ const uploadToS3 = async (localFilePath: string, toS3Path: string) => {
     Bucket: bucketName,
     Key: toS3Path,
   });
-  const response = await client.send(command);
-  console.log("resp", response);
+  await client.send(command);
 };
 
 const deleteTempFile = (file: File) => fs.promises.rm(file.filepath);
