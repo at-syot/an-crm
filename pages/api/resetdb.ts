@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import * as db from "../../src/database";
+import * as db from "../../src/api/database";
 
 export default async function handler(
   req: NextApiRequest,

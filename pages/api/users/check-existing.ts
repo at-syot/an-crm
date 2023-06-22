@@ -1,5 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import * as db from "../../../src/database";
+import * as db from "../../../src/api/database";
 
 // TODO: big refactor!
 // - db connections [crmPool, apianypaydbPool]

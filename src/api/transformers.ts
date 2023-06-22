@@ -56,5 +56,4 @@ export const fromAllTicketsWithImageDAO_to_dto: FromAllTicketsWithImageDAO_to_DT
       }
       return ticketsDto;
     }, [] as AllTicketsWithImagesDTO);
-    // return [] as AllTicketsWithImagesDTO;
   };

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import * as db from "../../../src/database";
+import * as db from "../../../src/api/database";
 import * as lineUtils from "../../../src/utils/line";
 import type { GetProfileSuccess } from "../../../src/utils/line";
 import { v4 } from "uuid";

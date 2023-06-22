@@ -1,7 +1,7 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import joi from "joi";
 
-import * as db from "../../database";
+import * as db from "../database";
 import * as reqUtils from "../../utils/request";
 import * as ticketsRepo from "../repositories/tickets";
 import * as ticketLogRepo from "../repositories/ticketLog";
