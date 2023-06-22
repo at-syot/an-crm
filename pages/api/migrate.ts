@@ -58,11 +58,9 @@ export default async function migrate(
   const createTicketImagesTblSQL = `
     CREATE TABLE IF NOT EXISTS ticket_images (
         id INT NOT NULL AUTO_INCREMENT,
-        filename VARCHAR(255),
-        extension VARCHAR(255),
-        expiredDate DATETIME,
-
+        uri VARCHAR(255),
         ticketId VARCHAR(36),
+        cAt DATETIME,
 
         PRIMARY KEY(id),
         CONSTRAINT fk_ticketId_ticketImages FOREIGN KEY (ticketId)
