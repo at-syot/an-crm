@@ -1,10 +1,29 @@
 import { useEffect } from "react";
 import { useAtom } from "jotai";
-import { renderingPageAtom, lineAccessTokenAtom } from "../src/states";
+
+import {
+  renderingPageAtom,
+  lineAccessTokenAtom,
+  fetchingAtom,
+} from "../src/states";
 
 import Register from "../src/components/Register";
 import Tickets from "../src/components/Tickets";
 import CreateTicketPage from "../src/components/CreateTicket";
+
+export default function Main() {
+  useInitLiffAndCheckUserExist();
+  useFetchTickets();
+  const [renderingPage] = useAtom(renderingPageAtom);
+  const [lineAT] = useAtom(lineAccessTokenAtom);
+
+  if (renderingPage == "Entry")
+    return <>checking line token & check user exist</>;
+  if (renderingPage == "Register") return <Register lineAT={lineAT ?? ""} />;
+  if (renderingPage == "ViewTickets") return <Tickets />;
+  if (renderingPage == "CreateTicket") return <CreateTicketPage />;
+  return <></>;
+}
 
 const checkLineUserExist = (lineAccessToken: string) =>
   fetch("/api/users/check-existing", {
@@ -18,6 +37,7 @@ const checkLineUserExist = (lineAccessToken: string) =>
 const useInitLiffAndCheckUserExist = () => {
   const [, setRenderingPage] = useAtom(renderingPageAtom);
   const [, setLineAccessToken] = useAtom(lineAccessTokenAtom);
+  const [, setFetching] = useAtom(fetchingAtom);
 
   useEffect(() => {
     import("@line/liff").then(async ({ liff }) => {
@@ -27,9 +47,13 @@ const useInitLiffAndCheckUserExist = () => {
         } else {
           const accessToken = liff.getAccessToken();
           if (accessToken) {
+            setFetching(true);
+
             const response = await checkLineUserExist(accessToken);
             setRenderingPage(response.errors ? "Register" : "ViewTickets");
             setLineAccessToken(accessToken);
+
+            setFetching(false);
           }
         }
       });
@@ -39,15 +63,20 @@ const useInitLiffAndCheckUserExist = () => {
   }, []);
 };
 
-export default function Main() {
-  useInitLiffAndCheckUserExist();
-  const [renderingPage] = useAtom(renderingPageAtom);
-  const [lineAT] = useAtom(lineAccessTokenAtom);
+const fetchTickets = async () => {
+  const response = await fetch("/api/tickets");
+  const tickets = await response.json();
+  if (response.status !== 200) {
+    return { errors: "" };
+  }
+  return tickets;
+};
 
-  if (renderingPage == "Entry")
-    return <>checking line token & check user exist</>;
-  if (renderingPage == "Register") return <Register lineAT={lineAT ?? ""} />;
-  if (renderingPage == "ViewTickets") return <Tickets />;
-  if (renderingPage == "CreateTicket") return <CreateTicketPage />;
-  return <></>;
-}
+const useFetchTickets = () => {
+  const [lineAccessToken] = useAtom(lineAccessTokenAtom);
+  useEffect(() => {
+    if (lineAccessToken) {
+      fetchTickets().then((tickets) => console.log("tickets", tickets));
+    }
+  }, [lineAccessToken]);
+};

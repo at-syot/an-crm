@@ -1,7 +1,25 @@
 import type { PoolConnection } from "mysql2/promise";
 import { v4 } from "uuid";
 
-import type { TicketCreateDAO, TicketWithImageDAO } from "../daos";
+import type {
+  TicketCreateDAO,
+  TicketWithImageDAO,
+  AllTicketsWithImagesDAO,
+} from "../daos";
+
+export type GetAllTicketsWithImageFn = (
+  conn: PoolConnection
+) => Promise<TicketWithImageDAO[]>;
+export const getAllTicketsWithImage: GetAllTicketsWithImageFn = async (
+  conn
+) => {
+  const sql = `
+    SELECT * FROM tickets t 
+    LEFT JOIN ticket_images ti 
+    ON t.id = ti.ticketId`;
+  const [ticketsWithImage] = await conn.query(sql);
+  return ticketsWithImage as TicketWithImageDAO[];
+};
 
 export type CreateTicketFn = (
   conn: PoolConnection,
@@ -35,7 +53,7 @@ export const createTicket: CreateTicketFn = async (conn, dao) => {
 export type GetTicketWithImagesByIdFn = (
   conn: PoolConnection,
   id: string
-) => Promise<TicketWithImageDAO[]>;
+) => Promise<AllTicketsWithImagesDAO>;
 export const getTicketWithImagesById: GetTicketWithImagesByIdFn = async (
   conn,
   id
@@ -46,5 +64,5 @@ export const getTicketWithImagesById: GetTicketWithImagesByIdFn = async (
         ON ti.ticketId = t.id
       WHERE t.id = ?`;
   const [records] = await conn.query(sql, [id]);
-  return records as TicketWithImageDAO[];
+  return records as AllTicketsWithImagesDAO;
 };

@@ -9,6 +9,9 @@ export default async function ticket(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
+  if (req.method == "GET") {
+    return handlers.getAllTicketsWithImagesHander(req, res);
+  }
   if (req.method == "POST") {
     return handlers.createTicketHandler(req, res);
   }

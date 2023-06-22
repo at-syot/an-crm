@@ -8,7 +8,9 @@ export type IssueTopicItemAtom = {
   parentId?: string;
 };
 export type IssueTopicsAtom = Record<string, IssueTopicItemAtom>;
+
 export const issueTopicsAtom = atom<IssueTopicsAtom>({});
+export const ticketsWithImagesAtom = atom(0);
 
 // application states
 export const fetchingAtom = atom(false);

@@ -1,5 +1,6 @@
 "use client";
 
+import styles from "./styles.module.css";
 import {
   Box,
   Divider,
@@ -10,12 +11,10 @@ import {
   ListItemText,
   Stack,
 } from "@mui/material";
-import { AddBox, ChevronRight } from "@mui/icons-material";
+import { ChevronRight } from "@mui/icons-material";
 import { Typography } from "@mui/material";
 
 import TicketCreateBtn from "./TicketCreateBtn";
-
-import styles from "./styles.module.css";
 
 export default function TicketPage() {
   return (
