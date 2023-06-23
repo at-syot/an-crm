@@ -1,4 +1,5 @@
 import { atom } from "jotai";
+import type { AllTicketsWithImagesDTO } from "../data.types";
 
 // domain states
 export type IssueTopicItemAtom = {
@@ -10,7 +11,7 @@ export type IssueTopicItemAtom = {
 export type IssueTopicsAtom = Record<string, IssueTopicItemAtom>;
 
 export const issueTopicsAtom = atom<IssueTopicsAtom>({});
-export const ticketsWithImagesAtom = atom(0);
+export const ticketsWithImagesAtom = atom<AllTicketsWithImagesDTO>([]);
 
 // application states
 export const fetchingAtom = atom(false);

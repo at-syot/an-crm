@@ -41,6 +41,8 @@ export const fromAllTicketsWithImageDAO_to_dto: FromAllTicketsWithImageDAO_to_DT
         name: dao.name,
         currentStatus: dao.currentStatus,
         issueTopicId: dao.issueTopicId,
+        cAt: dao.cAt,
+        uAt: dao.uAt,
       } as TicketWithImagesDTO;
 
       if (!isTicketIdExist) {

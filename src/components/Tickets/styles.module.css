@@ -8,6 +8,26 @@
   overflow-y: scroll;
 }
 
+.ticketItemStatus {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+  flex-shrink: 1;
+  flex-grow: 0;
+  min-width: 100px;
+}
+
+.ticketItemStatus > span {
+  color: red;
+}
+
+.ticketItemDivider {
+  width: 0.5px;
+  background-color: #a4a8b0;
+  min-height: 50px;
+}
+
 .createWrapper {
   flex-grow: 1;
   display: flex;

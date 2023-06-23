@@ -1,10 +1,16 @@
 // tickets
 
+export enum TicketStatus {
+  NEW = "new",
+  ACCEPTED = "accepted",
+  PROCESSING = "processing",
+  FINISHED = "finished",
+}
 export type Ticket = {
   id: string;
   merchantName?: string;
   name: string;
-  currentStatus: string;
+  currentStatus: TicketStatus;
   issueTopicId: string;
   detail?: string;
   cAt?: Date;

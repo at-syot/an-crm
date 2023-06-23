@@ -16,7 +16,8 @@ export const getAllTicketsWithImage: GetAllTicketsWithImageFn = async (
   const sql = `
     SELECT * FROM tickets t 
     LEFT JOIN ticket_images ti 
-    ON t.id = ti.ticketId`;
+    ON t.id = ti.ticketId
+    ORDER BY t.uAt DESC`;
   const [ticketsWithImage] = await conn.query(sql);
   return ticketsWithImage as TicketWithImageDAO[];
 };

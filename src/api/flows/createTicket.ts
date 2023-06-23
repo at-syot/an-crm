@@ -11,6 +11,7 @@ import type {
   CreateTicketImagesFn,
   UploadTicketImagesToS3Fn,
 } from "../repositories/ticketImages";
+import { TicketStatus } from "../domains";
 import type { FlowCreateTicketDTO, FlowResCreateTicketDTO } from "../dtos";
 import type { FromTicketWithImageDAO_to_FlowDAOFn } from "../transformers";
 
@@ -33,7 +34,7 @@ export const createTicketFlow: FlowCreateTicketFn = async (
   deps
 ) => {
   const { ticketName, issueId, detail, images } = args;
-  const ticketStatus = "new";
+  const ticketStatus = TicketStatus.NEW;
   const ticketId = await deps.createTicket(conn, {
     name: ticketName,
     issueTopicId: issueId,
