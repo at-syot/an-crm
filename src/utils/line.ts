@@ -13,7 +13,7 @@ export type VerifyTokenSuccess = {
     expiresIn: string;
   };
 };
-type VerifyTokenFn = (
+export type VerifyTokenFn = (
   accessToken: string
 ) => Promise<VerifyTokenFail | VerifyTokenSuccess>;
 export const verifyToken: VerifyTokenFn = async (accessToken) => {
@@ -43,7 +43,7 @@ export type GetProfileSuccess = {
     picture: string;
   };
 };
-type GetProfileFn = (
+export type GetProfileFn = (
   accessToken: string
 ) => Promise<GetProfileFail | GetProfileSuccess>;
 export const getProfile: GetProfileFn = async (accessToken) => {

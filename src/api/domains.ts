@@ -1,5 +1,20 @@
-// tickets
+type Unit = {
+  cAt?: Date;
+  cBy?: string;
+  uAt?: Date;
+  uBy?: string;
+};
 
+// users
+export type User = {
+  id: string;
+  lineId: string;
+  phoneNo: string;
+  email: string;
+  active: boolean;
+} & Unit;
+
+// tickets
 export enum TicketStatus {
   NEW = "new",
   ACCEPTED = "accepted",
@@ -13,11 +28,7 @@ export type Ticket = {
   currentStatus: TicketStatus;
   issueTopicId: string;
   detail?: string;
-  cAt?: Date;
-  cBy?: Date;
-  uAt?: Date;
-  uBy?: Date;
-};
+} & Unit;
 export type TicketImage = {
   id: string;
   ticketId: string;
@@ -31,6 +42,4 @@ export type TicketLog = {
   id: string;
   ticketId: string;
   status: string;
-  cAt?: Date;
-  cby?: Date;
-};
+} & Unit;

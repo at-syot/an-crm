@@ -1,7 +1,4 @@
 import type { PoolConnection } from "mysql2/promise";
-import * as ticketRepo from "../repositories/tickets";
-import * as ticketLogRepo from "../repositories/ticketLog";
-import * as ticketImageRepo from "../repositories/ticketImages";
 import type {
   CreateTicketFn,
   GetTicketWithImagesByIdFn,

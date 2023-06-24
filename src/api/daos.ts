@@ -1,8 +1,11 @@
-import type { Ticket, TicketImage, TicketLog } from "./domains";
+import type { Ticket, TicketImage, TicketLog, User } from "./domains";
+
+// users
+export type UserDAO = User;
 
 // tickets
 export type TicketCreateDAO = Omit<Ticket, "id">;
-export type TicketWithImageDAO = Ticket & Omit<TicketImage, "id" | "cAt">;
+export type TicketWithImageDAO = Ticket & Pick<TicketImage, "uri">;
 export type AllTicketsWithImagesDAO = TicketWithImageDAO[];
 
 // ticketLog
