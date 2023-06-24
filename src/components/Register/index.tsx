@@ -67,6 +67,7 @@ export default function Register(props: RegisterProps) {
     } else {
       setRegisterStatus("success");
       setRegisterStatusAlert(true);
+
       // block for 3 secs, and switch to ViewTickets page
       setTimeout(() => {
         setRenderingPage("ViewTickets");

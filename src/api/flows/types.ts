@@ -8,5 +8,3 @@ type FlowResponseSuccess<DT> = FlowResponseStatus & {
 };
 
 export type FlowResponse<DT> = FlowResponseSuccess<DT> | FlowResponseFail;
-export const assertFlowResponseFail = (res: object) =>
-  "errors" in res ? (res as FlowResponseFail) : (res as unknown);

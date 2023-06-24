@@ -1,5 +1,6 @@
 import type { Files } from "formidable";
 import type { Ticket, TicketImageOnlyURI } from "./domains";
+import type { CreateUserDAO, UserDAO } from "./daos";
 
 // dtos
 export type TicketWithImagesDTO = Ticket & { images: TicketImageOnlyURI[] };
@@ -14,6 +15,9 @@ export type ReqCreateTicketDTO = {
 export type ResCreateTicketDTO = TicketWithImagesDTO;
 
 // flows
+
+// -- register user
+export type FlowResRegisterUserDTO = UserDAO;
 
 // -- create ticket
 export type FlowCreateTicketDTO = ReqCreateTicketDTO & { images: Files };

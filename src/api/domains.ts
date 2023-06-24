@@ -5,6 +5,19 @@ type Unit = {
   uBy?: string;
 };
 
+// users.apianypay
+export type ApiAnypayUser = {
+  u_id: string;
+  u_account_type: string;
+  u_email: string;
+  u_firstname: string;
+  u_lastname: string;
+  u_home_phone: string;
+  u_mobile_phone: string;
+  u_businessName: string;
+  u_busn_type: string;
+};
+
 // users
 export type User = {
   id: string;

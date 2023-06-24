@@ -3,8 +3,8 @@ import { NextApiRequest, NextApiResponse } from "next";
 import * as db from "../database";
 import * as ticketsRepo from "../repositories/tickets";
 import * as transformers from "../transformers";
-import { getTicketsFlow } from "../flows/getTickets";
-import type { FlowGetTicketsDeps } from "../flows/getTickets";
+import { getTicketsFlow } from "../flows";
+import type { FlowGetTicketsDeps } from "../flows";
 
 export const getAllTicketsWithImagesHander = async (
   req: NextApiRequest,

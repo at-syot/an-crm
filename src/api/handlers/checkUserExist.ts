@@ -2,17 +2,14 @@ import { NextApiRequest, NextApiResponse } from "next";
 import joi from "joi";
 
 import * as db from "../database";
-import { checkUserExistFlow } from "../flows/checkUserExist";
+import { checkUserExistFlow } from "../flows";
 import type { FlowResponseFail } from "../flows";
-import { assertFlowResponseFail } from "../flows";
 import type {
   FlowCheckUserExistArgs,
   FlowCheckUserExistDeps,
 } from "../flows/checkUserExist";
 import * as lineUtils from "../../utils/line";
 import { getUserByLineId } from "../repositories/users";
-import { stat } from "fs";
-import { assert } from "console";
 
 const requiredStr = joi.string().required();
 const schema = joi.object({

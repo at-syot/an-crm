@@ -7,8 +7,8 @@ import * as ticketsRepo from "../repositories/tickets";
 import * as ticketLogRepo from "../repositories/ticketLog";
 import * as ticketImageRepo from "../repositories/ticketImages";
 import * as transformers from "../transformers";
-import { createTicketFlow } from "../flows/createTicket";
-import type { FlowCreateTicketDeps } from "../flows/createTicket";
+import { createTicketFlow } from "../flows";
+import type { FlowCreateTicketDeps } from "../flows";
 import type { FlowCreateTicketDTO } from "../dtos";
 
 const schema = joi
