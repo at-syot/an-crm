@@ -1,0 +1,15 @@
+.container {
+  margin-top: 2rem;
+}
+
+.backButtonBox {
+  flex-grow: 1;
+}
+
+.imagesContainer {
+  margin-top: 1.5rem;
+}
+
+.imagesContainer > h6 {
+  margin-bottom: 1rem;
+}

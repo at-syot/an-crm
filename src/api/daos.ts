@@ -4,6 +4,7 @@ import type {
   TicketLog,
   User,
   ApiAnypayUser,
+  IssueTopic,
 } from "./domains";
 
 // users.apianypay
@@ -14,9 +15,23 @@ export type UserDAO = User;
 export type CreateUserDAO = Omit<User, "id" | "active">;
 
 // tickets
-export type TicketCreateDAO = Omit<Ticket, "id">;
-export type TicketWithImageDAO = Ticket & Pick<TicketImage, "uri">;
+export type TicketDAO = Ticket;
+export type TicketCreateDAO = Omit<TicketDAO, "id">;
+export type TicketWithImageDAO = TicketDAO &
+  TicketImageIncludedDAO &
+  IssueTopicIncludedDAO;
+
 export type AllTicketsWithImagesDAO = TicketWithImageDAO[];
+
+// ticket image
+export type TicketImageDAO = TicketImage;
+export type TicketImageIncludedDAO = { imageId: string; uri: string };
 
 // ticketLog
 export type TicketLogCreateDAO = Omit<TicketLog, "id">;
+
+// issueTopic
+export type IssueTopicIncludedDAO = {
+  issueId: string;
+  issueName: string;
+};

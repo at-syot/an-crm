@@ -7,12 +7,13 @@ import * as ticketsRepo from "../repositories/tickets";
 import * as ticketLogRepo from "../repositories/ticketLog";
 import * as ticketImageRepo from "../repositories/ticketImages";
 import * as transformers from "../transformers";
-import { createTicketFlow } from "../flows";
-import type { FlowCreateTicketDeps } from "../flows";
+import { createTicketFlow } from "../flows/createTicket";
+import type { FlowCreateTicketDeps } from "../flows/createTicket";
 import type { FlowCreateTicketDTO } from "../dtos";
 
 const schema = joi
   .object({
+    userId: joi.string().required(),
     ticketName: joi.string().required(),
     // merchantName: joi.string().required(),
     issueId: joi.string().required(),
@@ -36,6 +37,7 @@ export const createTicketHandler: HandlerFn = async (req, res) => {
 
   try {
     const flowArgs = {
+      userId: String(fields.userId),
       ticketName: String(fields.ticketName),
       issueId: String(fields.issueId),
       detail: String(fields.detail),

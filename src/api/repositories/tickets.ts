@@ -16,7 +16,9 @@ export const getAllTicketsWithImage: GetAllTicketsWithImageFn = async (
   const sql = `
     SELECT 
 	    t.*,
-	    ti.uri as imageURI,
+      ti.id as imageId,
+	    ti.uri,
+      it.id as issueId,
 	    it.name as issueName
     FROM tickets t 
     LEFT JOIN ticket_images ti ON t.id = ti.ticketId
@@ -35,21 +37,27 @@ export const createTicket: CreateTicketFn = async (conn, dao) => {
   const sql = `
       INSERT INTO tickets (
         id,
+        userId,
         name, 
         detail, 
         issueTopicId,
         currentStatus,
         cAt,
-        uAt
-      ) VALUES (?, ?, ?, ?, ?, ?, ?)`;
+        cBy,
+        uAt,
+        uBy
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
   const values = [
     ticketId,
+    dao.userId,
     dao.name,
     dao.detail,
     dao.issueTopicId,
     "new",
     new Date(),
+    dao.userId,
     new Date(),
+    dao.userId,
   ];
   await conn.execute(sql, values);
   return ticketId;
@@ -64,7 +72,10 @@ export const getTicketWithImagesById: GetTicketWithImagesByIdFn = async (
   id
 ) => {
   const sql = `
-      SELECT * FROM tickets t
+      SELECT 
+        t.*, 
+        ti.uri
+      FROM tickets t
       LEFT JOIN ticket_images ti 
         ON ti.ticketId = t.id
       WHERE t.id = ?`;

@@ -3,6 +3,7 @@ import type { PoolConnection } from "mysql2/promise";
 import type { GetAllTicketsWithImageFn } from "../repositories/tickets";
 import type { FromAllTicketsWithImageDAO_to_DTOFn } from "../transformers";
 import type { FlowResGetAllTicketsDTO } from "../dtos";
+import { getS3Client, requestShareablePresignedURL } from "../../utils/aws";
 
 export type FlowGetTicketsDeps = {
   getAllTicketsWithImage: GetAllTicketsWithImageFn;
@@ -14,5 +15,5 @@ export type FlowGetTicketsFn = (
 ) => Promise<FlowResGetAllTicketsDTO>;
 export const getTicketsFlow: FlowGetTicketsFn = async (conn, deps) => {
   const tickets = await deps.getAllTicketsWithImage(conn);
-  return deps.toResponse(tickets);
+  return await deps.toResponse(tickets);
 };

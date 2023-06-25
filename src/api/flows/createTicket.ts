@@ -30,9 +30,10 @@ export const createTicketFlow: FlowCreateTicketFn = async (
   args,
   deps
 ) => {
-  const { ticketName, issueId, detail, images } = args;
+  const { userId, ticketName, issueId, detail, images } = args;
   const ticketStatus = TicketStatus.NEW;
   const ticketId = await deps.createTicket(conn, {
+    userId,
     name: ticketName,
     issueTopicId: issueId,
     currentStatus: ticketStatus,

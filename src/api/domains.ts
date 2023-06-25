@@ -36,6 +36,7 @@ export enum TicketStatus {
 }
 export type Ticket = {
   id: string;
+  userId: string;
   merchantName?: string;
   name: string;
   currentStatus: TicketStatus;
@@ -48,7 +49,6 @@ export type TicketImage = {
   uri: string;
   cAt?: Date;
 };
-export type TicketImageOnlyURI = Pick<TicketImage, "uri">;
 
 // ticketLog
 export type TicketLog = {
@@ -56,3 +56,11 @@ export type TicketLog = {
   ticketId: string;
   status: string;
 } & Unit;
+
+// issueTopics
+export type IssueTopic = {
+  id: string;
+  name: string;
+  parentId?: string;
+  active: boolean;
+};

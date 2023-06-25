@@ -2,7 +2,7 @@ import { NextApiRequest, NextApiResponse } from "next";
 import joi from "joi";
 
 import * as db from "../database";
-import { checkUserExistFlow } from "../flows";
+import { checkUserExistFlow } from "../flows/checkUserExist";
 import type { FlowResponseFail } from "../flows";
 import type {
   FlowCheckUserExistArgs,

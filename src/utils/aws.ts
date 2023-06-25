@@ -1,7 +1,9 @@
-import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import {
+  S3Client,
+  PutObjectCommand,
+  GetObjectCommand,
+} from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import fetch from "node-fetch";
-import axios from "axios";
 import fs from "fs";
 import path from "path";
 import type { Files, File } from "formidable";
@@ -20,6 +22,19 @@ const expiredIn = 3600;
 
 export const requestPresignedURL = (s3Client: S3Client, path: string) => {
   const command = new PutObjectCommand({
+    Bucket: bucketName,
+    Key: path,
+  });
+  return getSignedUrl(s3Client, command, {
+    expiresIn: expiredIn,
+  });
+};
+
+export const requestShareablePresignedURL = (
+  s3Client: S3Client,
+  path: string
+) => {
+  const command = new GetObjectCommand({
     Bucket: bucketName,
     Key: path,
   });

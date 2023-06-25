@@ -1,7 +1,11 @@
 import { atom } from "jotai";
-import type { AllTicketsWithImagesDTO } from "../data.types";
+import type {
+  AllTicketsWithImagesDTO,
+  UserDTO,
+  TicketWithImagesDTO,
+} from "../data.types";
 
-// domain states
+// domain states --> to be removed soon.
 export type IssueTopicItemAtom = {
   active: boolean;
   id: string;
@@ -10,17 +14,22 @@ export type IssueTopicItemAtom = {
 };
 export type IssueTopicsAtom = Record<string, IssueTopicItemAtom>;
 
+export const userAtom = atom<UserDTO | undefined>(undefined);
 export const issueTopicsAtom = atom<IssueTopicsAtom>({});
 export const ticketsWithImagesAtom = atom<AllTicketsWithImagesDTO>([]);
 
 // application states
 export const fetchingAtom = atom(false);
 export const lineAccessTokenAtom = atom<string | undefined>("");
+export const viewingTicketAtom = atom<TicketWithImagesDTO | undefined>(
+  undefined
+);
 
 // UI states
 type RenderingPageAtomValue =
   | "Entry"
   | "Register"
   | "ViewTickets"
-  | "CreateTicket";
+  | "CreateTicket"
+  | "TicketViewEdit";
 export const renderingPageAtom = atom<RenderingPageAtomValue>("Entry");
