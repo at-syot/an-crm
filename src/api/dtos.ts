@@ -2,7 +2,10 @@ import type { Files } from "formidable";
 import type {
   IssueTopicIncludedDAO,
   TicketDAO,
+  TicketDeleteDAO,
+  TicketImageDAO,
   TicketImageIncludedDAO,
+  TicketWithImageDAO,
   UserDAO,
 } from "./daos";
 
@@ -11,6 +14,7 @@ export type UserDTO = UserDAO;
 export type TicketWithImagesDTO = TicketDAO & {
   images: TicketImageIncludedDAO[];
 } & IssueTopicIncludedDAO;
+export type TicketImageIncludedDTO = TicketImageIncludedDAO;
 
 export type AllTicketsWithImagesDTO = TicketWithImagesDTO[];
 
@@ -37,3 +41,10 @@ export type FlowResCreateTicketDTO = TicketWithImagesDTO;
 
 // -- get all tickets
 export type FlowResGetAllTicketsDTO = AllTicketsWithImagesDTO;
+
+// -- delete ticket
+export type FlowDeleteTicketDTO = TicketDeleteDAO;
+export type FlowResDeleteTicketDTO = TicketWithImagesDTO;
+
+// -- delete ticket'image
+export type FlowDeleteTicketImageDTO = Omit<TicketImageDAO, "cAt">;

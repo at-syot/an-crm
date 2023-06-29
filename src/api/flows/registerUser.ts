@@ -54,6 +54,12 @@ export const registerUserFlow: FlowRegisterUserFn = async (
     const {
       data: { sub: lineId },
     } = getLineProfileResponse as GetProfileSuccess;
+
+    const indbUser = await deps.getUserByLineId(conn, lineId);
+    if (indbUser) {
+      return { status: 409, errors: [{ message: `user is already exist` }] };
+    }
+
     await deps.createUser(conn, { lineId, email, phoneNo });
     conn.commit(); // **
 

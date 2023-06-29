@@ -3,7 +3,6 @@ import type { PoolConnection } from "mysql2/promise";
 import type { GetAllTicketsWithImageFn } from "../repositories/tickets";
 import type { FromAllTicketsWithImageDAO_to_DTOFn } from "../transformers";
 import type { FlowResGetAllTicketsDTO } from "../dtos";
-import { getS3Client, requestShareablePresignedURL } from "../../utils/aws";
 
 export type FlowGetTicketsDeps = {
   getAllTicketsWithImage: GetAllTicketsWithImageFn;

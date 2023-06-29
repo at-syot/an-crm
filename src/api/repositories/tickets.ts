@@ -5,6 +5,7 @@ import type {
   TicketCreateDAO,
   TicketWithImageDAO,
   AllTicketsWithImagesDAO,
+  TicketDeleteDAO,
 } from "../daos";
 
 export type GetAllTicketsWithImageFn = (
@@ -23,6 +24,7 @@ export const getAllTicketsWithImage: GetAllTicketsWithImageFn = async (
     FROM tickets t 
     LEFT JOIN ticket_images ti ON t.id = ti.ticketId
     LEFT JOIN issue_topics it ON t.issueTopicId = it.id 
+    WHERE t.dAt is NULL
     ORDER BY t.uAt DESC`;
   const [ticketsWithImage] = await conn.query(sql);
   return ticketsWithImage as TicketWithImageDAO[];
@@ -81,4 +83,17 @@ export const getTicketWithImagesById: GetTicketWithImagesByIdFn = async (
       WHERE t.id = ?`;
   const [records] = await conn.query(sql, [id]);
   return records as AllTicketsWithImagesDAO;
+};
+
+export type DeleteTicketFn = (
+  conn: PoolConnection,
+  dao: TicketDeleteDAO
+) => Promise<void>;
+export const deleteTicket: DeleteTicketFn = async (conn, dao) => {
+  const sql = `
+    UPDATE tickets
+    SET dAt = ?, dBy = ?
+    WHERE id = ? AND userId = ?`;
+  const values = [new Date(), dao.userId, dao.id, dao.userId];
+  await conn.execute(sql, values);
 };

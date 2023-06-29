@@ -5,18 +5,20 @@ import {
   renderingPageAtom,
   lineAccessTokenAtom,
   fetchingAtom,
-  ticketsWithImagesAtom,
+  userAtom,
 } from "../../states";
 
 import Register from "../Register";
 import Tickets from "../Tickets";
 import CreateTicketPage from "../CreateTicket";
-import { AllTicketsWithImagesDTO } from "../../data.types";
-import { widenedTypeToFormatedStr, DATE_FORMATS } from "../../utils/datetime";
+import TicketViewEdit from "../TicketViewEdit";
+import { useTicketsDataHandlers } from "../hooks/useTicketsDataHandlers";
+import { useIssuesDataFns } from "../hooks/useIssueDataFns";
 
 export default function Entry() {
   useInitLiffAndCheckUserExist();
   useFetchTickets();
+  useFetchIssues();
   const [renderingPage] = useAtom(renderingPageAtom);
   const [lineAT] = useAtom(lineAccessTokenAtom);
 
@@ -25,6 +27,7 @@ export default function Entry() {
   if (renderingPage == "Register") return <Register lineAT={lineAT ?? ""} />;
   if (renderingPage == "ViewTickets") return <Tickets />;
   if (renderingPage == "CreateTicket") return <CreateTicketPage />;
+  if (renderingPage == "TicketViewEdit") return <TicketViewEdit />;
   return <></>;
 }
 
@@ -41,6 +44,7 @@ const useInitLiffAndCheckUserExist = () => {
   const [, setRenderingPage] = useAtom(renderingPageAtom);
   const [, setLineAccessToken] = useAtom(lineAccessTokenAtom);
   const [, setFetching] = useAtom(fetchingAtom);
+  const [, setUser] = useAtom(userAtom);
 
   useEffect(() => {
     import("@line/liff").then(async ({ liff }) => {
@@ -53,6 +57,7 @@ const useInitLiffAndCheckUserExist = () => {
             setFetching(true);
 
             const response = await checkLineUserExist(accessToken);
+            setUser(response.errors ? undefined : response.data);
             setRenderingPage(response.errors ? "Register" : "ViewTickets");
             setLineAccessToken(accessToken);
 
@@ -66,34 +71,22 @@ const useInitLiffAndCheckUserExist = () => {
   }, []);
 };
 
-const fetchTickets = async () => {
-  const response = await fetch("/api/tickets");
-  const tickets = (await response.json()) as AllTicketsWithImagesDTO;
-  if (response.status !== 200) {
-    return { errors: true };
-  }
-
-  return {
-    data: tickets.map(({ uAt, ...ticket }) => {
-      return {
-        ...ticket,
-        uAt: widenedTypeToFormatedStr(uAt, "-", DATE_FORMATS.DDsMMsYYYY),
-      };
-    }),
-  };
-};
-
 const useFetchTickets = () => {
   const [lineAccessToken] = useAtom(lineAccessTokenAtom);
-  const [, setTicketsWithImages] = useAtom(ticketsWithImagesAtom);
+  const { fetchTickets } = useTicketsDataHandlers();
   useEffect(() => {
     if (lineAccessToken) {
-      fetchTickets().then((response) => {
-        const { errors, data } = response;
-        if (errors) return;
-        // @ts-ignore
-        setTicketsWithImages(data);
-      });
+      fetchTickets();
+    }
+  }, [lineAccessToken]);
+};
+
+const useFetchIssues = () => {
+  const [lineAccessToken] = useAtom(lineAccessTokenAtom);
+  const { fetchIssues } = useIssuesDataFns();
+  useEffect(() => {
+    if (lineAccessToken) {
+      fetchIssues();
     }
   }, [lineAccessToken]);
 };

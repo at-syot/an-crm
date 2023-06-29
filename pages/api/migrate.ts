@@ -14,6 +14,11 @@ export default async function migrate(
         phoneNo VARCHAR(20),
         active TINYINT DEFAULT 1,
         cAt DATETIME,
+        cBy VARCHAR(255),
+        uAt DATETIME,
+        uBy VARCHAR(255),
+        dAt DATETIME,
+        dBy VARCHAR(255),
 
         PRIMARY KEY(id)
     )`;
@@ -30,6 +35,8 @@ export default async function migrate(
         cBy VARCHAR(255),
         uAt DATETIME,
         uBy VARCHAR(255),
+        dAt DATETIME,
+        dBy VARCHAR(255),
 
         issueTopicId VARCHAR(36),
         userId VARCHAR(36),

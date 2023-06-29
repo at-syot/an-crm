@@ -1,0 +1,24 @@
+.selectedImage {
+  /* align-items: end; */
+  position: relative;
+}
+
+.selectedImage > img {
+  max-width: 100%;
+  max-height: 15rem;
+  object-fit: contain;
+}
+
+.selectedImage > button {
+  /* text-align: end; */
+  position: absolute;
+  right: 0;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 5px;
+  cursor: pointer;
+}
+
+.selectfile {
+  padding-bottom: 1rem;
+}

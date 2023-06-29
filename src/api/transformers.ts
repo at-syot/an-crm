@@ -59,6 +59,8 @@ const getInitTicketImagesDTOFrom = (dao: TicketWithImageDAO) => {
     cBy: dao.cBy,
     uAt: dao.uAt,
     uBy: dao.uBy,
+    dAt: dao.dAt,
+    dBy: dao.dBy,
   } satisfies TicketWithImagesDTO;
 };
 
@@ -68,7 +70,11 @@ const insertTicketImage = async (
 ) => {
   const { imageId, uri } = dao;
   if (uri) {
-    const imageWithPresignedUri = await withPresignedURL({ imageId, uri });
+    const imageWithPresignedUri = await withPresignedURL({
+      imageId,
+      uri,
+      displayUri: "",
+    });
     dto.images.push(imageWithPresignedUri);
   }
   return { ...dto };
@@ -83,5 +89,5 @@ const withPresignedURL: WithPresignedURLFn = async (image) => {
   const bucketPath = uri.split("//").slice(1)[0];
   const path = bucketPath.split("/").slice(1).join("/");
   const signedURL = await requestShareablePresignedURL(s3Client, path);
-  return { imageId, uri: signedURL };
+  return { imageId, displayUri: signedURL, uri };
 };

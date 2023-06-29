@@ -1,5 +1,5 @@
-import { List, Stack } from "@mui/material";
-import { Typography } from "@mui/material";
+import { Box, List, Stack, typographyClasses } from "@mui/material";
+import { Typography, Container } from "@mui/material";
 import { useAtom } from "jotai";
 
 import styles from "./styles.module.css";
@@ -10,14 +10,24 @@ import TicketItem from "./TicketItem";
 export default function TicketPage() {
   const [tickets] = useAtom(ticketsWithImagesAtom);
   return (
-    <Stack className={styles.stack}>
-      <Typography variant="h5">Tickets ({tickets.length})</Typography>
-      <List className={styles.ticketsList}>
-        {tickets.map((ticket) => (
-          <TicketItem key={ticket.id} ticket={ticket} />
-        ))}
-      </List>
-      <TicketCreateBtn />
-    </Stack>
+    <Container className={styles.container}>
+      <Stack className={styles.stack}>
+        <Typography variant="h5" className={styles.title}>
+          Tickets ({tickets.length})
+        </Typography>
+        {tickets.length > 0 ? (
+          <List className={styles.ticketsList}>
+            {tickets.map((ticket) => (
+              <TicketItem key={ticket.id} ticket={ticket} />
+            ))}
+          </List>
+        ) : (
+          <Box className={styles.ticketListEmpty}>
+            <Typography>You don't open any ticket yet.</Typography>
+          </Box>
+        )}
+        <TicketCreateBtn />
+      </Stack>
+    </Container>
   );
 }

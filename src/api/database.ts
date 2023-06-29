@@ -24,7 +24,7 @@ export const getDB = () => {
     password: DB_PASSWORD,
     database: "anp_crm",
     waitForConnections: true,
-    connectionLimit: 10,
+    connectionLimit: 30,
     maxIdle: 10,
     enableKeepAlive: true,
   });

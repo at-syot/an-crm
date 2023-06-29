@@ -19,7 +19,7 @@ export const getAllTicketsWithImagesHander = async (
       toResponse: transformers.fromAllTicketsWithImageDAO_to_dto,
     } satisfies FlowGetTicketsDeps;
     const data = await getTicketsFlow(conn, flowDeps);
-    return res.json(data);
+    return res.json({ message: "fetch tickets success.", data });
   } catch (err) {
     console.log("get all tickets with images error", err);
     return res.status(500).json({ errors: [] });

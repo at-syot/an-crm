@@ -14,11 +14,12 @@ import styles from "./styles.module.css";
 import { useRef, useState } from "react";
 
 import { useAtom } from "jotai";
-import { fetchingAtom, renderingPageAtom } from "../../states";
+import { fetchingAtom, renderingPageAtom, userAtom } from "../../states";
 
-import CreateTicketSelectIssue from "./CreateTicketSelectIssue";
-import { defaultIssueValue } from "./CreateTicketSelectIssue";
+import { defaultIssueValue } from "../_shared/SelectIssues";
 import CreateTicketImages from "./CreateTicketImages";
+import { useTicketsDataHandlers } from "../hooks/useTicketsDataHandlers";
+import SelectIssues from "../_shared/SelectIssues";
 
 export default function CreateTicketPage() {
   const [invalidTicketName, setInvalidTicketName] = useState<boolean>(false);
@@ -80,9 +81,9 @@ export default function CreateTicketPage() {
           inputRef={nameInputRef}
           error={invalidTicketName}
         />
-        <CreateTicketSelectIssue
+        <SelectIssues
           error={invalidIssue}
-          onSelect={(issueId) => {
+          onSelected={(issueId) => {
             formValues.current.issueId = issueId;
           }}
         />
@@ -115,7 +116,11 @@ type ValidationResult = {
   errors: { ticketName: boolean; issueId: boolean };
 };
 const useOnSubmitActions = () => {
-  const [fetching, setFetching] = useAtom(fetchingAtom);
+  const [user] = useAtom(userAtom);
+  const [, setFetching] = useAtom(fetchingAtom);
+  const { fetchTickets } = useTicketsDataHandlers();
+  const [, setRenderingPage] = useAtom(renderingPageAtom);
+
   const validate: (values: CreateTicketFormValues) => ValidationResult = ({
     ticketName,
     issueId,
@@ -133,7 +138,17 @@ const useOnSubmitActions = () => {
   };
 
   const onSubmit = async (values: CreateTicketFormValues) => {
-    const formData = Object.entries(values).reduce<FormData>(
+    // check current active user exist
+    if (!user) {
+      return alert("Please login");
+    }
+
+    // build form data
+    const valuesWithUserId = (values: CreateTicketFormValues) => ({
+      ...values,
+      userId: user?.id,
+    });
+    const formData = Object.entries(valuesWithUserId(values)).reduce<FormData>(
       (formData, [key, value]) => {
         if (typeof value == "object") {
           Object.entries(value as Record<string, File>).forEach(
@@ -150,19 +165,21 @@ const useOnSubmitActions = () => {
       new FormData()
     );
 
+    // set create ticket request
     setFetching(true);
     const response = await fetch("/api/tickets", {
       method: "POST",
       body: formData,
     });
     setFetching(false);
-    const responseJson = await response.json();
+    const json = await response.json();
     if (response.status !== 200) {
       console.log("error", response.status);
       return;
     }
 
-    console.log("responseJson", responseJson);
+    await fetchTickets();
+    setRenderingPage("ViewTickets");
   };
 
   return {

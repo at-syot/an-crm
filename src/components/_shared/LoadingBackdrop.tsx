@@ -1,6 +1,6 @@
 import { Backdrop, CircularProgress } from "@mui/material";
 import { useAtom } from "jotai";
-import { fetchingAtom } from "../states";
+import { fetchingAtom } from "../../states";
 
 export default function LoadingBackdrop() {
   const [fetching] = useAtom(fetchingAtom);

@@ -2,6 +2,7 @@ import {
   S3Client,
   PutObjectCommand,
   GetObjectCommand,
+  DeleteObjectCommand,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
@@ -30,6 +31,14 @@ export const requestPresignedURL = (s3Client: S3Client, path: string) => {
   });
 };
 
+export const removeBucketNameFromURI = (uri: string) => {
+  if (!uri.includes(`s3://${bucketName}`)) return uri;
+
+  const bucketPath = uri.split("//").slice(1)[0];
+  const path = bucketPath.split("/").slice(1).join("/");
+  return path;
+};
+
 export const requestShareablePresignedURL = (
   s3Client: S3Client,
   path: string
@@ -53,6 +62,19 @@ export const uploadFilesToS3 = async (files: Files, s3Dir: string) => {
   });
 
   return await Promise.all(uploads);
+};
+
+export type DeleteFileInS3Fn = (
+  path: string
+) => ReturnType<typeof deleteFileInS3>;
+export const deleteFileInS3 = (path: string) => {
+  const client = getS3Client();
+  const keyPath = removeBucketNameFromURI(path);
+  const command = new DeleteObjectCommand({
+    Bucket: bucketName,
+    Key: keyPath,
+  });
+  return client.send(command);
 };
 
 // ------------ internal ------------

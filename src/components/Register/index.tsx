@@ -1,8 +1,11 @@
 "use client";
 
+import type { UserDTO } from "../../data.types";
+import { isClientFailResponse, isClientSuccessResponse } from "../../client";
+
 import { PropsWithChildren, useRef, useState } from "react";
 import { useAtom } from "jotai";
-import { fetchingAtom, renderingPageAtom } from "../../states";
+import { fetchingAtom, renderingPageAtom, userAtom } from "../../states";
 import Container from "@mui/material/Container";
 import {
   Alert,
@@ -17,6 +20,7 @@ import {
 
 type RegisterProps = PropsWithChildren<{ lineAT: string }>;
 export default function Register(props: RegisterProps) {
+  const [, setUser] = useAtom(userAtom);
   const [fetching, setFetching] = useAtom(fetchingAtom);
   const [, setRenderingPage] = useAtom(renderingPageAtom);
   const [registerStatus, setRegisterStatus] = useState<"success" | "error">();
@@ -58,13 +62,16 @@ export default function Register(props: RegisterProps) {
       headers: { ["Content-Type"]: "application/json" },
       body: JSON.stringify({ phoneNo, email, lineAT }),
     });
-    const responseJSON = await response.json();
+    const json = await response.json();
     setFetching(false);
 
-    if (response.status != 200) {
+    if (response.status !== 200 && isClientFailResponse(json)) {
       setRegisterStatus("error");
       setRegisterStatusAlert(false);
-    } else {
+    }
+
+    if (isClientSuccessResponse<UserDTO>(json)) {
+      setUser(json.data);
       setRegisterStatus("success");
       setRegisterStatusAlert(true);
 

@@ -3,6 +3,8 @@ type Unit = {
   cBy?: string;
   uAt?: Date;
   uBy?: string;
+  dAt?: Date;
+  dBy?: string;
 };
 
 // users.apianypay
@@ -24,16 +26,10 @@ export type User = {
   lineId: string;
   phoneNo: string;
   email: string;
-  active: boolean;
 } & Unit;
 
 // tickets
-export enum TicketStatus {
-  NEW = "new",
-  ACCEPTED = "accepted",
-  PROCESSING = "processing",
-  FINISHED = "finished",
-}
+export type TicketStatus = "new" | "accepted" | "processing" | "finished";
 export type Ticket = {
   id: string;
   userId: string;

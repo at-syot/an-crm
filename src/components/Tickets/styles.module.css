@@ -1,9 +1,25 @@
 .stack {
-  padding: 1rem;
-  max-height: 100vh;
+  min-height: 100vh;
+}
+
+.title {
+  padding: 1rem 0;
+}
+
+.ticketListEmpty {
+  flex-grow: 1;
+  flex-basis: 70vh;
+  background-color: rgba(162, 163, 163, 0.1);
+  border-radius: 5px;
+}
+
+.ticketListEmpty > p {
+  padding: 1rem 0;
+  text-align: center;
 }
 
 .ticketsList {
+  flex-grow: 1;
   flex-shrink: 1;
   overflow-y: scroll;
 }
@@ -29,7 +45,7 @@
 }
 
 .createWrapper {
-  flex-grow: 1;
+  padding-bottom: 2rem;
   display: flex;
   flex-direction: column;
   justify-content: center;

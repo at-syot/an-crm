@@ -28,6 +28,22 @@ export const createTicketImages: CreateTicketImagesFn = async (
   await Promise.all(uris.map(createTicketImage));
 };
 
+export type DeleteTicketImageFn = (
+  conn: PoolConnection,
+  ticketId: string,
+  imageId: string
+) => Promise<void>;
+export const deleteTicketImage: DeleteTicketImageFn = async (
+  conn,
+  ticketId,
+  imageId
+) => {
+  const sql = `
+    DELETE FROM ticket_images
+    WHERE ticketId = ? AND id = ?`;
+  await conn.execute(sql, [ticketId, imageId]);
+};
+
 export type UploadTicketImagesToS3Fn = (
   ticketId: string,
   images: Files

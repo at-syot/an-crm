@@ -20,12 +20,16 @@ export type TicketCreateDAO = Omit<TicketDAO, "id">;
 export type TicketWithImageDAO = TicketDAO &
   TicketImageIncludedDAO &
   IssueTopicIncludedDAO;
-
 export type AllTicketsWithImagesDAO = TicketWithImageDAO[];
+export type TicketDeleteDAO = Pick<TicketDAO, "id" | "userId">;
 
 // ticket image
 export type TicketImageDAO = TicketImage;
-export type TicketImageIncludedDAO = { imageId: string; uri: string };
+export type TicketImageIncludedDAO = {
+  imageId: string;
+  uri: string;
+  displayUri: string;
+};
 
 // ticketLog
 export type TicketLogCreateDAO = Omit<TicketLog, "id">;
