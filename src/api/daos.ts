@@ -22,6 +22,10 @@ export type TicketWithImageDAO = TicketDAO &
   IssueTopicIncludedDAO;
 export type AllTicketsWithImagesDAO = TicketWithImageDAO[];
 export type TicketDeleteDAO = Pick<TicketDAO, "id" | "userId">;
+export type UpdateTicketDAO = Pick<
+  TicketDAO,
+  "id" | "name" | "issueTopicId" | "detail"
+>;
 
 // ticket image
 export type TicketImageDAO = TicketImage;

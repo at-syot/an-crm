@@ -11,6 +11,7 @@ import {
   IconButton,
   Stack,
   TextField,
+  Alert,
 } from "@mui/material";
 import { ChevronLeft, Clear, Delete, Details } from "@mui/icons-material";
 import styles from "./styles.module.css";
@@ -18,13 +19,20 @@ import styles from "./styles.module.css";
 import TicketImages from "../_shared/TicketImages";
 import { useRef, useState } from "react";
 import SelectIssues from "../_shared/SelectIssues";
+import { useTicketsDataHandlers } from "../hooks/useTicketsDataHandlers";
+import { ReqUpdateTicketDTO, UpdateTicketDTO } from "../../data.types";
 
 export default function TicketViewEdit() {
   const [ticket, setViewingTicket] = useAtom(viewingTicketAtom);
   const [, setRenderingPage] = useAtom(renderingPageAtom);
   const [, setOpenDeleteTicketDialog] = useAtom(openDeleteTicketDialogAtom);
+  const { updateTicket, fetchTickets } = useTicketsDataHandlers();
 
   // comp's state & editing values
+  const [alertStatus, setAlertStatus] = useState<"error" | "success">(
+    "success"
+  );
+  const [openAlert, setOpenAlert] = useState(false);
   const [ticketName, setTicketName] = useState(ticket?.name);
   const selectedIssueId = useRef("");
   const [ticketDetail, setTicketDetail] = useState(ticket?.detail);
@@ -34,17 +42,42 @@ export default function TicketViewEdit() {
     setViewingTicket(undefined);
     setRenderingPage("ViewTickets");
   };
-  const onSaveOrEditBtnClick = () => {
+  const onSaveOrEditBtnClick = async () => {
     if (!editMode) {
       setEditMode(true);
       return;
     }
+
+    if (!ticket || !ticketName) return;
+
+    const params = {
+      name: ticketName,
+      issueTopicId: selectedIssueId.current,
+      detail: ticketDetail,
+    } satisfies ReqUpdateTicketDTO;
+    const response = await updateTicket(ticket.id, params);
+    if (response.errors) {
+      setAlertStatus("error");
+      setOpenAlert(true);
+      return;
+    }
+
+    // con here
+    await fetchTickets();
+    setRenderingPage("ViewTickets");
   };
   const onDeleteBtnClick = () => setOpenDeleteTicketDialog(true);
   const onClearBtnClick = () => setEditMode(false);
 
   return (
     <Container className={styles.container}>
+      {/*  alert */}
+      {openAlert ? (
+        <Alert severity={alertStatus}>
+          {alertStatus == "error" ? "save change error" : "edit success"}
+        </Alert>
+      ) : null}
+
       {/* actions */}
       <Stack direction={"row"}>
         <Box className={styles.backButtonBox}>

@@ -2,16 +2,20 @@ import { useAtom } from "jotai";
 import { fetchingAtom, ticketsWithImagesAtom } from "../../states";
 import type {
   AllTicketsWithImagesDTO,
+  ReqUpdateTicketDTO,
   TicketWithImagesDTO,
+  UpdateTicketDTO,
 } from "../../data.types";
 import { isClientSuccessResponse } from "../../client";
 import { widenedTypeToFormatedStr } from "../../utils/datetime";
 
 export const useTicketsDataHandlers = () => {
   const { fetchTickets } = useFetchTicketsAction();
+  const { updateTicket } = useUpdateTicketAction();
   const { deleteTicket } = useDeleteTicketAction();
   return {
     fetchTickets,
+    updateTicket,
     deleteTicket,
   };
 };
@@ -44,6 +48,37 @@ const useFetchTicketsAction = () => {
   };
 
   return { fetchTickets: doFetchTickets };
+};
+
+const useUpdateTicketAction = () => {
+  const [, setFetching] = useAtom(fetchingAtom);
+  const doUpdateTicket = async (id: string, dto: ReqUpdateTicketDTO) => {
+    const body = JSON.stringify(dto);
+    console.log("body", body);
+
+    try {
+      setFetching(true);
+      const response = await fetch(`/api/tickets/${id}/update`, {
+        method: "POST",
+        headers: {
+          ["Content-Type"]: "application/json",
+        },
+        body,
+      });
+      setFetching(false);
+
+      const json = await response.json();
+      const { status } = response;
+      if (status === 200 && isClientSuccessResponse(json)) {
+        return { message: json.message, data: json.data };
+      }
+      return json;
+    } catch (err) {
+      return { errors: [] };
+    }
+  };
+
+  return { updateTicket: doUpdateTicket };
 };
 
 const useDeleteTicketAction = () => {

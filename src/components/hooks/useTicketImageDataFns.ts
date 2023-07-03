@@ -31,8 +31,6 @@ const useDeleteTicketImageAction = () => {
     setFetching(false);
 
     const jsonResponse = await response.json();
-    console.log("jsonResponse", jsonResponse);
-
     if (response.status !== 200 && isClientFailResponse(jsonResponse)) {
       alert(jsonResponse.errors[0].message);
       return;

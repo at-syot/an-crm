@@ -6,6 +6,7 @@ import type {
   TicketWithImageDAO,
   AllTicketsWithImagesDAO,
   TicketDeleteDAO,
+  UpdateTicketDAO,
 } from "../daos";
 
 export type GetAllTicketsWithImageFn = (
@@ -63,6 +64,24 @@ export const createTicket: CreateTicketFn = async (conn, dao) => {
   ];
   await conn.execute(sql, values);
   return ticketId;
+};
+
+export type UpdateTicketByIdFn = (
+  conn: PoolConnection,
+  dao: UpdateTicketDAO
+) => Promise<unknown>;
+export const updateTicketById: UpdateTicketByIdFn = (conn, dao) => {
+  const sql = `
+    UPDATE tickets
+    SET 
+      name = ?,
+      issueTopicId = ?,
+      detail = ?,
+      uAt = ?
+      -- uBy = ?
+    WHERE id = ?`;
+  const { id, name, issueTopicId, detail } = dao;
+  return conn.execute(sql, [name, issueTopicId, detail, new Date(), id]);
 };
 
 export type GetTicketWithImagesByIdFn = (

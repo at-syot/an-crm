@@ -64,6 +64,12 @@ export default function TicketImages(props: TicketImagesProps) {
     const { id: ticketId } = viewingTicket;
     const touploadFile = files[0] satisfies File;
     await createTicketImage(ticketId, touploadFile);
+
+    // TODO
+    // create new image
+    // - fetch ticket by id (api)
+    // - set viewing ticket (atom)
+    // - re-render with new image display
   };
 
   return (

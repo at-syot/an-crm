@@ -6,6 +6,7 @@ import type {
   TicketImageDAO,
   TicketImageIncludedDAO,
   TicketWithImageDAO,
+  UpdateTicketDAO,
   UserDAO,
 } from "./daos";
 
@@ -15,8 +16,8 @@ export type TicketWithImagesDTO = TicketDAO & {
   images: TicketImageIncludedDAO[];
 } & IssueTopicIncludedDAO;
 export type TicketImageIncludedDTO = TicketImageIncludedDAO;
-
 export type AllTicketsWithImagesDTO = TicketWithImagesDTO[];
+export type UpdateTicketDTO = UpdateTicketDAO;
 
 // handlers request & response
 export type ReqCreateTicketDTO = {
@@ -26,6 +27,8 @@ export type ReqCreateTicketDTO = {
   detail?: string;
 };
 export type ResCreateTicketDTO = TicketWithImagesDTO;
+
+export type ReqUpdateTicketDTO = Omit<UpdateTicketDAO, "id">;
 
 // flows
 
@@ -45,6 +48,9 @@ export type FlowResGetAllTicketsDTO = AllTicketsWithImagesDTO;
 // -- delete ticket
 export type FlowDeleteTicketDTO = TicketDeleteDAO;
 export type FlowResDeleteTicketDTO = TicketWithImagesDTO;
+
+// -- update ticket
+export type FlowUpdateTicketDTO = UpdateTicketDTO;
 
 // -- delete ticket'image
 export type FlowDeleteTicketImageDTO = Omit<TicketImageDAO, "cAt">;
