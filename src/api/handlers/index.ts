@@ -6,3 +6,4 @@ export * from "./deleteTicketImage";
 export * from "./getAllTicketsWithImages";
 export * from "./createTicketImage";
 export * from "./updateTicket";
+export * from "./getTicketById";

@@ -11,10 +11,12 @@ import { widenedTypeToFormatedStr } from "../../utils/datetime";
 
 export const useTicketsDataHandlers = () => {
   const { fetchTickets } = useFetchTicketsAction();
+  const { fetchTicketById } = useFetchTicketByIdAction();
   const { updateTicket } = useUpdateTicketAction();
   const { deleteTicket } = useDeleteTicketAction();
   return {
     fetchTickets,
+    fetchTicketById,
     updateTicket,
     deleteTicket,
   };
@@ -40,6 +42,7 @@ const useFetchTicketsAction = () => {
         uAt: widenedTypeToFormatedStr(uAt, "-", "DD/MM/YYYY"),
       }));
 
+      console.log("set ticket", tickets);
       // @ts-ignore
       setTickets(tickets);
       return { message: json.message };
@@ -50,11 +53,23 @@ const useFetchTicketsAction = () => {
   return { fetchTickets: doFetchTickets };
 };
 
+const useFetchTicketByIdAction = () => {
+  const fetchTicketById = async (id: string) => {
+    const response = await fetch(`/api/tickets/${id}`, {
+      method: "GET",
+      headers: { ["Content-Type"]: "application/json" },
+    });
+    const json = await response.json();
+    return json;
+  };
+
+  return { fetchTicketById };
+};
+
 const useUpdateTicketAction = () => {
   const [, setFetching] = useAtom(fetchingAtom);
   const doUpdateTicket = async (id: string, dto: ReqUpdateTicketDTO) => {
     const body = JSON.stringify(dto);
-    console.log("body", body);
 
     try {
       setFetching(true);
@@ -92,14 +107,10 @@ const useDeleteTicketAction = () => {
       headers: { ["Content-Type"]: "application/json" },
       body,
     });
-    const json = await response.json();
+    const json: unknown = await response.json();
     setFetching(false);
 
-    const { status } = response;
-    if (status === 200 && isClientSuccessResponse(json)) {
-      return { message: json.message };
-    }
-    return { errors: [] };
+    return json;
   };
 
   return { deleteTicket: doDeleteTicket };

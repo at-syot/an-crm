@@ -94,12 +94,15 @@ export const getTicketWithImagesById: GetTicketWithImagesByIdFn = async (
 ) => {
   const sql = `
       SELECT 
-        t.*, 
-        ti.uri
+	      t.*,
+        ti.id as imageId,
+	      ti.uri,
+        it.id as issueId,
+	      it.name as issueName
       FROM tickets t
-      LEFT JOIN ticket_images ti 
-        ON ti.ticketId = t.id
-      WHERE t.id = ?`;
+      LEFT JOIN ticket_images ti ON ti.ticketId = t.id
+      LEFT JOIN issue_topics it ON t.issueTopicId = it.id 
+      WHERE t.id = ? AND t.dAt is NULL`;
   const [records] = await conn.query(sql, [id]);
   return records as AllTicketsWithImagesDAO;
 };

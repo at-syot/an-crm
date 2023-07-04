@@ -6,12 +6,16 @@ import {
   renderingPageAtom,
   viewingTicketAtom,
 } from "../../../states";
-import { useTicketsDataHandlers } from "../../hooks/useTicketsDataHandlers";
 
 import ConfirmDialog from "../ConfirmDialog";
-import { ChangeEvent, useEffect, useState } from "react";
-import { TicketImageIncludedDTO } from "../../../data.types";
+import { useEffect, useState } from "react";
 import { useTicketImageDataFns } from "../../hooks/useTicketImageDataFns";
+import type { TicketImageIncludedDTO } from "../../../data.types";
+import {
+  useOnInputFileChangeAction,
+  useDeleteTicketAction,
+  useOnDeleteTicketImageAction,
+} from "./hooks";
 
 // move to TicketViewEdit component
 type TicketImagesProps = {
@@ -23,54 +27,11 @@ export default function TicketImages(props: TicketImagesProps) {
     openDeleteTicketDialogAtom
   );
   const [viewingTicket] = useAtom(viewingTicketAtom);
-  const { createTicketImage, deleteTicketImage } = useTicketImageDataFns();
-  const { onDeleteConfirm } = useDeleteTicketAction();
 
-  const [renderingTicketImages, setRenderingTicketImages] = useState<
-    Record<string, TicketImageIncludedDTO>
-  >({});
-  const renderingTicketImagesCount = Object.keys(renderingTicketImages).length;
-
-  useEffect(() => {
-    if (!viewingTicket) return;
-    const images = viewingTicket.images.reduce(
-      (image, dao) => ({ ...image, [dao.uri]: { ...dao } }),
-      {} as Record<string, TicketImageIncludedDTO>
-    );
-    setRenderingTicketImages(images);
-  }, [viewingTicket]);
-
+  const { onInputFileChange } = useOnInputFileChangeAction();
+  const { onDeleteTicketConfirm } = useDeleteTicketAction();
+  const { onDeleteTicketImageClick } = useOnDeleteTicketImageAction();
   const onDialogCancelClick = () => setOpenDeleteTicketDialog(false);
-
-  // delete image
-  const onDeleteImageClick = async (image: TicketImageIncludedDTO) => {
-    // delete imageId api
-    const { imageId, uri } = image;
-    await deleteTicketImage(viewingTicket?.id ?? "", imageId, uri);
-
-    // delete image internal rendering state
-    const renderingTicketImagesCopy = { ...renderingTicketImages };
-    delete renderingTicketImagesCopy[image.uri];
-    setRenderingTicketImages(renderingTicketImagesCopy);
-  };
-
-  // save new image
-  const onInputFileChanged = async (e: ChangeEvent<HTMLInputElement>) => {
-    const { files } = e.target;
-    if (!viewingTicket || !viewingTicket.id) return;
-    if (!files) return;
-    if (!files[0]) return;
-
-    const { id: ticketId } = viewingTicket;
-    const touploadFile = files[0] satisfies File;
-    await createTicketImage(ticketId, touploadFile);
-
-    // TODO
-    // create new image
-    // - fetch ticket by id (api)
-    // - set viewing ticket (atom)
-    // - re-render with new image display
-  };
 
   return (
     <>
@@ -79,20 +40,20 @@ export default function TicketImages(props: TicketImagesProps) {
         title={"Deleting Ticket"}
         content={"Are you sure to delete the ticket ?"}
         onCancel={onDialogCancelClick}
-        onConfirm={onDeleteConfirm}
+        onConfirm={onDeleteTicketConfirm}
       />
       <Box style={{ marginTop: "1.5rem" }}>
         <Typography>
-          Related ticket s images ({renderingTicketImagesCount})
+          Related ticket s images ({viewingTicket?.images.length ?? 0})
         </Typography>
         <br />
         <Stack gap={5}>
-          {Object.entries(renderingTicketImages).map(([uri, image]) => {
+          {viewingTicket?.images.map((image) => {
             return (
               <TicketImage
-                key={uri}
+                key={image.uri}
                 image={image}
-                onDeleteImageClick={onDeleteImageClick}
+                onDeleteImageClick={onDeleteTicketImageClick}
               />
             );
           })}
@@ -102,7 +63,7 @@ export default function TicketImages(props: TicketImagesProps) {
           type="file"
           accept="image/*"
           className={styles.selectfile}
-          onChange={onInputFileChanged}
+          onChange={onInputFileChange}
           style={{ marginTop: "1.5rem" }}
         />
       </Box>
@@ -114,13 +75,11 @@ type TicketImageProps = {
   image: TicketImageIncludedDTO;
   onDeleteImageClick: (image: TicketImageIncludedDTO) => void;
 };
-const TicketImage = ({
-  image: { uri, imageId, displayUri },
-  onDeleteImageClick,
-}: TicketImageProps) => {
+const TicketImage = ({ image, onDeleteImageClick }: TicketImageProps) => {
   const [loading, setLoading] = useState(true);
-  const onDeleteClick = () => onDeleteImageClick({ uri, imageId, displayUri });
+  const onDeleteClick = () => onDeleteImageClick(image);
   const onImageLoaded = () => setLoading(() => false);
+
   return (
     <>
       {loading ? (
@@ -135,25 +94,8 @@ const TicketImage = ({
         style={{ height: loading ? 0 : "auto" }}
       >
         <button onClick={onDeleteClick}>X</button>
-        <img alt="" src={displayUri} onLoad={onImageLoaded} />
+        <img alt="" src={image.displayUri} onLoad={onImageLoaded} />
       </Stack>
     </>
   );
-};
-
-const useDeleteTicketAction = () => {
-  const [ticket] = useAtom(viewingTicketAtom);
-  const [, setRenderingPage] = useAtom(renderingPageAtom);
-  const { deleteTicket, fetchTickets } = useTicketsDataHandlers();
-  const [, setOpenDeleteTicketDialog] = useAtom(openDeleteTicketDialogAtom);
-
-  return {
-    onDeleteConfirm: async () => {
-      if (!ticket) return;
-      setOpenDeleteTicketDialog(false);
-      await deleteTicket(ticket);
-      await fetchTickets();
-      setRenderingPage("ViewTickets");
-    },
-  };
 };

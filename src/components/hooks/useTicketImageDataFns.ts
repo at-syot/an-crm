@@ -12,7 +12,6 @@ export const useTicketImageDataFns = () => {
 
 const useDeleteTicketImageAction = () => {
   const [, setFetching] = useAtom(fetchingAtom);
-  const { fetchTickets } = useTicketsDataHandlers();
 
   const deleteTicketImage = async (
     ticketId: string,
@@ -30,20 +29,14 @@ const useDeleteTicketImageAction = () => {
     });
     setFetching(false);
 
-    const jsonResponse = await response.json();
-    if (response.status !== 200 && isClientFailResponse(jsonResponse)) {
-      alert(jsonResponse.errors[0].message);
-      return;
-    }
-
-    await fetchTickets();
+    const json: unknown = await response.json();
+    return json;
   };
   return { deleteTicketImage };
 };
 
 const useCreateTicketImageAction = () => {
   const [, setFetching] = useAtom(fetchingAtom);
-  const { fetchTickets } = useTicketsDataHandlers();
 
   const createTicketImage = async (ticketId: string, file: File) => {
     const formData = new FormData();
@@ -55,16 +48,10 @@ const useCreateTicketImageAction = () => {
       method: "POST",
       body: formData,
     });
-    setFetching(false);
     const json: unknown = await response.json();
+    setFetching(false);
 
-    if (response.status !== 200 && isClientFailResponse(json)) {
-      console.log(json.errors);
-      return;
-    }
-
-    // success
-    await fetchTickets();
+    return json;
   };
   return { createTicketImage };
 };

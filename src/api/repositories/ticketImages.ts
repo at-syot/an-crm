@@ -32,8 +32,8 @@ export type DeleteTicketImageFn = (
   conn: PoolConnection,
   ticketId: string,
   imageId: string
-) => Promise<void>;
-export const deleteTicketImage: DeleteTicketImageFn = async (
+) => Promise<unknown>;
+export const deleteTicketImage: DeleteTicketImageFn = (
   conn,
   ticketId,
   imageId
@@ -41,7 +41,7 @@ export const deleteTicketImage: DeleteTicketImageFn = async (
   const sql = `
     DELETE FROM ticket_images
     WHERE ticketId = ? AND id = ?`;
-  await conn.execute(sql, [ticketId, imageId]);
+  return conn.execute(sql, [ticketId, imageId]);
 };
 
 export type UploadTicketImagesToS3Fn = (

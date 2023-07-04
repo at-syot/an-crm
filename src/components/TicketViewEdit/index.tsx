@@ -62,7 +62,6 @@ export default function TicketViewEdit() {
       return;
     }
 
-    // con here
     await fetchTickets();
     setRenderingPage("ViewTickets");
   };
