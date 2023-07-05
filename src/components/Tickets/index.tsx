@@ -23,7 +23,7 @@ export default function TicketPage() {
           </List>
         ) : (
           <Box className={styles.ticketListEmpty}>
-            <Typography>You don't open any ticket yet.</Typography>
+            <Typography>You dont open any ticket yet.</Typography>
           </Box>
         )}
         <TicketCreateBtn />

@@ -1,5 +1,5 @@
 import Entry from "../src/components/Entry";
 
-export default function () {
+export default function Home() {
   return <Entry />;
 }
