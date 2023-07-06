@@ -61,4 +61,4 @@ jobs:
           user: ${{ env.USER }} # Remote server user - required
           private_key: ${{ secrets.EC2_SSHKEY }} # Private ssh key registered on the remote server - required
           command: |
-            sudo docker run -p 80:3000 -d $ECR_REGISTRY/$ECR_REPOSITORY:latest
+            echo $ECR_REGISTRY/$ECR_REPOSITORY:latest
