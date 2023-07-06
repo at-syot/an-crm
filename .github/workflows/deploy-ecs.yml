@@ -48,5 +48,4 @@ jobs:
         run: |
           echo $EC2_SSHKEY > ec2_key
           sudo chmod 600 ec2_key 
-          ssh -i ec2_key -o "StrictHostKeyChecking no" ${{ env.EC2_HOST }} \
-          bash -c pwd
+          ssh -i ec2_key -o "StrictHostKeyChecking no" ${{ env.EC2_HOST }} bash -c pwd
