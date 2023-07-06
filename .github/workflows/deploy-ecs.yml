@@ -7,6 +7,7 @@ on:
 env:
   AWS_REGION: ap-southeast-1
   ECR_REPOSITORY: anp-crm
+  EC2_HOST: ubuntu@ec2-3-1-9-223.ap-southeast-1.compute.amazonaws.com
 
 jobs:
   deploy:
@@ -43,4 +44,7 @@ jobs:
 
       - name: Exec image on EC2
         run: |
-          ls -la
+          cat ${{ secrets.EC2_SSHKEY }} > ec2_key
+          ssh -i ~/anp/.keys/anypay-backoffice ${{ env.EC2_HOST }} \ 
+          bash -c \
+          pwd
