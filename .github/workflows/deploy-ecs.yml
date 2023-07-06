@@ -43,7 +43,9 @@ jobs:
       #     echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_OUTPUT
 
       - name: Exec image on EC2
+        env:
+          EC2_SSHKEY: ${{ secrets.EC2_SSHKEY }}
         run: |
-          echo ${{ secrets.EC2_SSHKEY }} > ec2_key
+          echo $EC2_SSHKEY > ec2_key
           cat ec2_key
           # ssh -i ~/anp/.keys/anypay-backoffice ${{ env.EC2_HOST }} bash -c pwd
