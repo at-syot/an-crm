@@ -47,5 +47,5 @@ jobs:
           EC2_SSHKEY: ${{ secrets.EC2_SSHKEY }}
         run: |
           echo $EC2_SSHKEY > ec2_key
-          cat ec2_key
-          # ssh -i ~/anp/.keys/anypay-backoffice ${{ env.EC2_HOST }} bash -c pwd
+          ssh -i ~/anp/.keys/anypay-backoffice ${{ env.EC2_HOST }} \
+          bash -c pwd
