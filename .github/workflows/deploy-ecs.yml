@@ -47,5 +47,5 @@ jobs:
           EC2_SSHKEY: ${{ secrets.EC2_SSHKEY }}
         run: |
           echo $EC2_SSHKEY > ec2_key
-          ssh -i ec2_key ${{ env.EC2_HOST }} \
+          ssh -i ec2_key -o "StrictHostKeyChecking no" ${{ env.EC2_HOST }} \
           bash -c pwd
