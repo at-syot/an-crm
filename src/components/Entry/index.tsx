@@ -23,7 +23,7 @@ export default function Entry() {
   const [lineAT] = useAtom(lineAccessTokenAtom);
 
   if (renderingPage == "Entry")
-    return <>checking line token & check user exist</>;
+    return <>checking line token & check user exist @by gh-workflow</>;
   if (renderingPage == "Register") return <Register lineAT={lineAT ?? ""} />;
   if (renderingPage == "ViewTickets") return <Tickets />;
   if (renderingPage == "CreateTicket") return <CreateTicketPage />;
