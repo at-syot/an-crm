@@ -61,4 +61,5 @@ jobs:
           user: ${{ env.USER }} # Remote server user - required
           private_key: ${{ secrets.EC2_SSHKEY }} # Private ssh key registered on the remote server - required
           command: |
-            echo $ECR_REGISTRY/$ECR_REPOSITORY:latest
+            env
+            # echo $ECR_REGISTRY/$ECR_REPOSITORY:latest
