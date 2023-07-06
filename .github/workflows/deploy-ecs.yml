@@ -61,5 +61,4 @@ jobs:
           user: ${{ env.USER }} # Remote server user - required
           private_key: ${{ secrets.EC2_SSHKEY }} # Private ssh key registered on the remote server - required
           command: |
-            env
-            # echo $ECR_REGISTRY/$ECR_REPOSITORY:latest
+            echo ${{ steps.login-ecr.outputs.registry }}/anp-crm:latest
