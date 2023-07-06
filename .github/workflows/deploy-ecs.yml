@@ -42,10 +42,21 @@ jobs:
       #     docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
       #     echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:latest" >> $GITHUB_OUTPUT
 
-      - name: Exec image on EC2
+      # - name: Exec image on EC2
+      #   env:
+      #     EC2_SSHKEY: ${{ secrets.EC2_SSHKEY }}
+      #   run: |
+      #     echo $EC2_SSHKEY > ec2_key
+      #     sudo chmod 600 ec2_key
+      #     ssh -i ec2_key -o "StrictHostKeyChecking no" ${{ env.EC2_HOST }} bash -c pwd
+
+      - name: SSH command action
+        uses: D3rHase/ssh-command-action@v0.2.2
         env:
-          EC2_SSHKEY: ${{ secrets.EC2_SSHKEY }}
-        run: |
-          echo $EC2_SSHKEY > ec2_key
-          sudo chmod 600 ec2_key 
-          ssh -i ec2_key -o "StrictHostKeyChecking no" ${{ env.EC2_HOST }} bash -c pwd
+          HOST: ec2-3-1-9-223.ap-southeast-1.compute.amazonaws.com
+          USER: ubuntu
+        with:
+          host: ${{ env.HOST }} # Remote server address / ip - required
+          user: ${{ env.USER }} # Remote server user - required
+          private_key: ${{ secrets.EC2_SSHKEY }} # Private ssh key registered on the remote server - required
+          command: echo 'hello world'
