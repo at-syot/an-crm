@@ -12,15 +12,13 @@ import type { Files, File } from "formidable";
 let s3client: S3Client;
 export const getS3Client = () => {
   if (s3client) return s3client;
-  s3client = new S3Client({ region: "ap-southeast-1" });
+  const region = process.env.AWS_REION;
+  s3client = new S3Client({ region });
   return s3client;
 };
 
-// bucket's name 'manage-documents.anypay.co.th'
-// presigned url expired in 3600
-const bucketName = "manage-documents.anypay.co.th";
-const expiredIn = 3600;
-
+const bucketName = String(process.env.AWS_S3_BUCKET);
+const expiredIn = parseInt(process.env.AWS_S3_PRESIGNED_EXPIRE_DURATION ?? "");
 export const requestPresignedURL = (s3Client: S3Client, path: string) => {
   const command = new PutObjectCommand({
     Bucket: bucketName,

@@ -4,7 +4,6 @@ import type {
   AllTicketsWithImagesDTO,
   ReqUpdateTicketDTO,
   TicketWithImagesDTO,
-  UpdateTicketDTO,
 } from "../../data.types";
 import { isClientSuccessResponse } from "../../client";
 import { widenedTypeToFormatedStr } from "../../utils/datetime";
@@ -42,7 +41,6 @@ const useFetchTicketsAction = () => {
         uAt: widenedTypeToFormatedStr(uAt, "-", "DD/MM/YYYY"),
       }));
 
-      console.log("set ticket", tickets);
       // @ts-ignore
       setTickets(tickets);
       return { message: json.message };

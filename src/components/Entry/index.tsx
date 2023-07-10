@@ -15,8 +15,9 @@ import TicketViewEdit from "../TicketViewEdit";
 import { useTicketsDataHandlers } from "../hooks/useTicketsDataHandlers";
 import { useIssuesDataFns } from "../hooks/useIssueDataFns";
 
-export default function Entry() {
-  useInitLiffAndCheckUserExist();
+type EntryProps = { lineliffID?: string };
+export default function Entry({ lineliffID }: EntryProps) {
+  useInitLiffAndCheckUserExist(lineliffID);
   useFetchTickets();
   useFetchIssues();
   const [renderingPage] = useAtom(renderingPageAtom);
@@ -40,13 +41,14 @@ const checkLineUserExist = (lineAccessToken: string) =>
     body: JSON.stringify({ lineAT: lineAccessToken }),
   }).then((r) => r.json());
 
-const useInitLiffAndCheckUserExist = () => {
+const useInitLiffAndCheckUserExist = (liffId?: string) => {
   const [, setRenderingPage] = useAtom(renderingPageAtom);
   const [, setLineAccessToken] = useAtom(lineAccessTokenAtom);
   const [, setFetching] = useAtom(fetchingAtom);
   const [, setUser] = useAtom(userAtom);
 
   useEffect(() => {
+    if (!liffId) return;
     import("@line/liff").then(async ({ liff }) => {
       liff.ready.then(async () => {
         if (!liff.isLoggedIn()) {
@@ -66,7 +68,7 @@ const useInitLiffAndCheckUserExist = () => {
         }
       });
 
-      await liff.init({ liffId: "1584232670-QOz40bj9" });
+      await liff.init({ liffId });
     });
   }, []);
 };

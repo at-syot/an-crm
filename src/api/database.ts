@@ -6,9 +6,12 @@ import type { QueryError } from "mysql2";
 let db: Pool;
 let apianypayDB: Pool;
 
-const DB_HOST = "anypay-db-tmp.cbkm16y0krx6.ap-southeast-1.rds.amazonaws.com";
-const DB_USER = "root";
-const DB_PASSWORD = "XReBXQka9wwFYnUlz8Uv";
+const DB_HOST = process.env.DB_HOST;
+const DB_PORT = parseInt(process.env.DB_PORT ?? "0");
+const DB_USER = process.env.DB_USER;
+const DB_PASSWORD = process.env.DB_PASSWORD;
+const DB_APIANYPAY = process.env.DB_APIANYPAY;
+const DB_ANPCRM = process.env.DB_ANPCRM;
 
 export const getDB = () => {
   if (db) {
@@ -16,13 +19,13 @@ export const getDB = () => {
     return db;
   }
 
-  console.log("database[ctm]: createPool");
+  console.log("database[crm]: createPool");
   db = mysql.createPool({
     host: DB_HOST,
-    port: 3306,
+    port: DB_PORT,
     user: DB_USER,
     password: DB_PASSWORD,
-    database: "anp_crm",
+    database: DB_ANPCRM,
     waitForConnections: true,
     connectionLimit: 30,
     maxIdle: 10,
@@ -34,15 +37,17 @@ export const getDB = () => {
 
 export const getAPIAnypayDB = () => {
   if (apianypayDB) {
+    console.log("database[apianpdb]: instance reused.");
     return apianypayDB;
   }
 
+  console.log("database[apianpdb]: createPool");
   apianypayDB = mysql.createPool({
     host: DB_HOST,
-    port: 3306,
+    port: DB_PORT,
     user: DB_USER,
     password: DB_PASSWORD,
-    database: "apianypay_db",
+    database: DB_APIANYPAY,
     waitForConnections: true,
     connectionLimit: 10,
     enableKeepAlive: true,
