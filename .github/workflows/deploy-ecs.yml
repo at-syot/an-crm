@@ -50,7 +50,4 @@ jobs:
           private_key: ${{ secrets.EC2_SSHKEY }} # Private ssh key registered on the remote server - required
           command: |
             ./before_start.sh
-            export IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY}}:latest
-            echo $IMAGE_URI > ./imageuri.txt
-            sudo docker pull $IMAGE_URI
             sudo docker run -v ./app/.env.local:/web/.env.local -p 80:3000 -d ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY}}:latest
