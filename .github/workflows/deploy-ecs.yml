@@ -38,7 +38,7 @@ jobs:
           # Build a docker container and
           # push it to ECR so that it can
           # be deployed to ECS.
-          docker build -t $ECR_REGISTRY/${{ secrets.ECR_REPOSITORY }}:latest .
+          docker build --build-arg LINELIFF_ID=${{ secrets.LINELIFF_ID }} -t $ECR_REGISTRY/${{ secrets.ECR_REPOSITORY }}:latest .
           docker push $ECR_REGISTRY/${{ secrets.ECR_REPOSITORY }}:latest
           echo "image=$ECR_REGISTRY/${{ secrets.ECR_REPOSITORY }}:latest" >> $GITHUB_OUTPUT
 
@@ -49,4 +49,8 @@ jobs:
           user: ${{ secrets.EC2_USER }} # Remote server user - required
           private_key: ${{ secrets.EC2_SSHKEY }} # Private ssh key registered on the remote server - required
           command: |
-            ./rm_running_containers.sh && sudo docker run -p 80:3000 -d ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY}}:latest
+            ./before_start.sh
+            export IMAGE_URI=${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY}}:latest
+            echo $IMAGE_URI > ./imageuri.txt
+            sudo docker pull $IMAGE_URI
+            sudo docker run -v ./app/.env.local:/web/.env.local -p 80:3000 -d ${{ steps.login-ecr.outputs.registry }}/${{ secrets.ECR_REPOSITORY}}:latest

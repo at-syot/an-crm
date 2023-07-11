@@ -1,16 +1,17 @@
 FROM node:20-alpine as deps 
 
+ARG LINELIFF_ID 
 RUN apk upgrade \
   && reboot \
   && wget -qO- https://get.pnpm.io/install.sh | ENV="$HOME/.shrc" SHELL="$(which sh)" sh - \
   && export PNPM_HOME="/root/.local/share/pnpm" \
   && echo "export PATH=$PNPM_HOME:$PATH" > .shrc 
 WORKDIR /web 
-COPY package.json ./package.json 
-COPY pnpm-lock.yaml ./pnpm-lock.yaml
-RUN source ~/.shrc && pnpm i 
 COPY . .
-RUN source ~/.shrc && pnpm build
+RUN echo "LINELIFF_ID=$LINELIFF_ID" > .env
+RUN source ~/.shrc \
+&& pnpm i \
+&& pnpm build 
 
 FROM deps as runner 
 WORKDIR /web
