@@ -3,7 +3,7 @@ import joi from "joi";
 
 import * as db from "../database";
 import { getUserByEmailAndPhoneNo } from "../repositories/users.apianypay";
-import { createUser, getUserByLineId } from "../repositories/users";
+import { createClientUser, getUserByLineId } from "../repositories/users";
 import * as lineUtils from "../../utils/line";
 import { registerUserFlow } from "../flows/registerUser";
 import type {
@@ -47,7 +47,7 @@ export const registerUser = async (
     getApiAnypayUserByEmailAndPhone: getUserByEmailAndPhoneNo,
     verifyLineToken: lineUtils.verifyToken,
     getLineProfile: lineUtils.getProfile,
-    createUser: createUser,
+    createClientUser: createClientUser,
     getUserByLineId: getUserByLineId,
   } satisfies FlowRegisterUserDeps;
   const { status, ...flowResponse } = await registerUserFlow(

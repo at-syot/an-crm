@@ -21,11 +21,15 @@ export type ApiAnypayUser = {
 };
 
 // users
+export type UserRole = "client" | "admin" | "super-admin" | "system";
 export type User = {
   id: string;
   lineId: string;
   phoneNo: string;
   email: string;
+  username: string;
+  password: string;
+  role: UserRole;
 } & Unit;
 
 // tickets

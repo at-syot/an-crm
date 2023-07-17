@@ -12,7 +12,7 @@ export type ApiAnypayUserDAO = ApiAnypayUser;
 
 // users
 export type UserDAO = User;
-export type CreateUserDAO = Omit<User, "id" | "active">;
+export type CreateClientUserDAO = Pick<User, "lineId" | "phoneNo">;
 
 // tickets
 export type TicketDAO = Ticket;

@@ -10,8 +10,11 @@ export default async function migrate(
   const createUserTblSQL = `
     CREATE TABLE IF NOT EXISTS users (
         id VARCHAR(255) DEFAULT (uuid()),
-        lineId VARCHAR(255) NOT NULL,
+        lineId VARCHAR(255),
         phoneNo VARCHAR(20),
+        username VARCHAR(100),
+        password VARCHAR(255),
+        role VARCHAR(50),
         active TINYINT DEFAULT 1,
         cAt DATETIME,
         cBy VARCHAR(255),

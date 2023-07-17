@@ -1,7 +1,10 @@
 import type { PoolConnection } from "mysql2/promise";
 import type { FlowResponse } from "./types";
 import type { GetUserByEmailAndPhoneNoFn } from "../repositories/users.apianypay";
-import type { CreateUserFn, GetUserByLineIdFn } from "../repositories/users";
+import type {
+  CreateClientUserFn,
+  GetUserByLineIdFn,
+} from "../repositories/users";
 import type { FlowResRegisterUserDTO } from "../dtos";
 import type {
   VerifyTokenFn,
@@ -19,7 +22,7 @@ export type FlowRegisterUserDeps = {
   getApiAnypayUserByEmailAndPhone: GetUserByEmailAndPhoneNoFn;
   verifyLineToken: VerifyTokenFn;
   getLineProfile: GetProfileFn;
-  createUser: CreateUserFn;
+  createClientUser: CreateClientUserFn;
   getUserByLineId: GetUserByLineIdFn;
 };
 export type FlowRegisterUserFn = (
@@ -48,7 +51,7 @@ export const registerUserFlow: FlowRegisterUserFn = async (
     const verifyResponse = await deps.verifyLineToken(lineAT);
     const getLineProfileResponse = await deps.getLineProfile(lineAT);
     if (verifyResponse.status == "fails") {
-      return { status: 401, errors: [] };
+      return { status: 401, errors: [{ message: "invalid line AT" }] };
     }
 
     const {
@@ -60,12 +63,12 @@ export const registerUserFlow: FlowRegisterUserFn = async (
       return { status: 409, errors: [{ message: `user is already exist` }] };
     }
 
-    await deps.createUser(conn, { lineId, email, phoneNo });
+    await deps.createClientUser(conn, { lineId, phoneNo });
     conn.commit(); // **
 
     const user = await deps.getUserByLineId(conn, lineId);
     if (!user) {
-      return { status: 404, errors: [] };
+      return { status: 404, errors: [{ message: "user not found" }] };
     }
 
     return { status: 200, message: "register user successful", data: user };

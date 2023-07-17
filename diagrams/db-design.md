@@ -8,6 +8,8 @@ erDiagram
       string lineID
       string phon-number
       string user-name
+      string password
+      string role
       bool active
     }
 
