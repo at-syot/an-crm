@@ -1,3 +1,4 @@
+import AWS from "aws-sdk";
 import {
   S3Client,
   PutObjectCommand,
@@ -8,6 +9,18 @@ import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import fs from "fs";
 import path from "path";
 import type { Files, File } from "formidable";
+
+function testAWSCredential() {
+  AWS.config.getCredentials((err) => {
+    if (err) return console.log("credential err", err.stack);
+    // list s3 objects
+    const s3 = new AWS.S3();
+    s3.listBuckets((err, data) => {
+      if (err) return console.log("list s3 err", err);
+      console.log("buckets", data.Buckets);
+    });
+  });
+}
 
 let s3client: S3Client;
 export const getS3Client = () => {
