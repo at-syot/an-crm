@@ -30,6 +30,7 @@ export type User = {
   username: string;
   password: string;
   role: UserRole;
+  active: boolean;
 } & Unit;
 
 // tickets

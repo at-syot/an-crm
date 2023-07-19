@@ -7,3 +7,4 @@ export * from "./getAllTicketsWithImages";
 export * from "./createTicketImage";
 export * from "./updateTicket";
 export * from "./getTicketById";
+export * from "./registerAdminUser";
