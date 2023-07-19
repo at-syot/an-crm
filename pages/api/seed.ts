@@ -27,9 +27,9 @@ export default async function seed(req: NextApiRequest, res: NextApiResponse) {
 
     res.status(200).json({ message: "seed data" });
   } catch (err) {
-    console.log("err -----", err);
-    await conn.rollback();
+    console.log("api/seed err", err);
 
+    await conn.rollback();
     res.status(500).send({});
   }
 }
