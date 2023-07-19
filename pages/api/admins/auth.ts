@@ -5,7 +5,9 @@ import * as db from "../../../src/api/database";
 import * as userRepo from "../../../src/api/repositories/users";
 import { CreateAdminUserDAO } from "../../../src/data.types";
 
-// import {} from 'jws'
+// TODO: move mock system user to seed api
+// TODO: move admin.auth to api/handlers
+// TODO: move verifyAdminRoleAccessToken to saperated file.
 
 const schema = joi.object({
   username: joi.string().required(),
@@ -13,22 +15,6 @@ const schema = joi.object({
 });
 
 export default async (req: NextApiRequest, res: NextApiResponse) => {
-  // // mock system user --> [DONE]
-  // const username = "system-user";
-  // const password = "sysuser4321";
-  // const hashed = await hashPlainPassword(password);
-
-  // const pool = db.getDB();
-  // const conn = await pool.getConnection();
-
-  // const input = {
-  //   username,
-  //   password: hashed,
-  //   role: "system",
-  //   cBy: "system",
-  // } satisfies CreateAdminUserDAO;
-  // const indbUser = await userRepo.createAdminUser(conn, input);
-
   const { error } = schema.validate(req.body);
   if (error) {
     return res.status(422).json({ errors: [{ message: "invalid body" }] });

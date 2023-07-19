@@ -14,38 +14,32 @@ const schema = joi.object({
 });
 
 /**
- *
- * @param req
- * @param res
- *
  * verify req.body
  * check user existing by username
  * hash user.password
  * create user
- *
- * @returns
  */
 export const registerAdminUser = async (
   req: NextApiRequest,
   res: NextApiResponse
 ) => {
-  const decoded = await verifyAdminRoleAccessToken(req, res);
-  const { valid } = decoded;
-  if (!valid) {
-    return res.status(401).json({ errors: [{ message: "unauthorized" }] });
-  }
-
-  const { error } = schema.validate(req.body);
-  if (error) {
-    return res
-      .status(422)
-      .json({ errors: [{ message: "unprocessable entity" }] });
-  }
-
   const conn = await db.getDB().getConnection();
   await conn.beginTransaction();
 
   try {
+    const decoded = await verifyAdminRoleAccessToken(req);
+    const { valid } = decoded;
+    if (!valid) {
+      return res.status(401).json({ errors: [{ message: "unauthorized" }] });
+    }
+
+    const { error } = schema.validate(req.body);
+    if (error) {
+      return res
+        .status(422)
+        .json({ errors: [{ message: "unprocessable entity" }] });
+    }
+
     const { username: cBy } = decoded;
     const { password, role, username } = req.body;
 
@@ -78,18 +72,12 @@ export const registerAdminUser = async (
 };
 
 /**
- * @param req
- * @param res
- *
  * get Bearer accessToken
  * verify & decode accessToken
  * verify username & role
  * pass user'data through header
  */
-type VerifyAdminRoleAccessTokenFn = (
-  req: NextApiRequest,
-  res: NextApiResponse
-) => Promise<
+type VerifyAdminRoleAccessTokenFn = (req: NextApiRequest) => Promise<
   | {
       valid: true;
       username: string;
@@ -98,8 +86,7 @@ type VerifyAdminRoleAccessTokenFn = (
   | { valid: false }
 >;
 const verifyAdminRoleAccessToken: VerifyAdminRoleAccessTokenFn = async (
-  req,
-  res
+  req
 ) => {
   const header = req.headers["authentication"] as string;
   const splitted = header.split(" ");
