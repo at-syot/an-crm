@@ -4,7 +4,10 @@ import { hashPlainPassword } from "../../utils/encryption";
 import * as db from "../database";
 import * as userRepo from "../repositories/users";
 import { CreateAdminUserDAO } from "../daos";
-import { verifyAdminRoleAccessToken } from "./helpers/verifyAdminRoleAccessToken";
+import {
+  verifyAdminRoleAccessToken,
+  isVerifyTokenFail,
+} from "./helpers/verifyAdminRoleAccessToken";
 
 const schema = joi.object({
   username: joi.string().required(),
@@ -29,8 +32,7 @@ export const registerAdminUser = async (
 
   try {
     const decoded = await verifyAdminRoleAccessToken(req);
-    const { valid } = decoded;
-    if (!valid) {
+    if (isVerifyTokenFail(decoded)) {
       return res.status(401).json({ errors: [{ message: "unauthorized" }] });
     }
 
@@ -43,7 +45,6 @@ export const registerAdminUser = async (
 
     const { username: cBy } = decoded;
     const { password, role, username } = req.body;
-
     const existingUser = await userRepo.getUserByUsername(conn, username);
     if (existingUser) {
       return res

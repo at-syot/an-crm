@@ -2,7 +2,13 @@ import { v4 } from "uuid";
 
 import type { PoolConnection } from "mysql2/promise";
 import type { UserRole } from "../domains";
-import type { UserDAO, CreateClientUserDAO, CreateAdminUserDAO } from "../daos";
+import type {
+  UserDAO,
+  CreateClientUserDAO,
+  CreateAdminUserDAO,
+  UpdateAdminUserDAO,
+  DeleteUserDAO,
+} from "../daos";
 
 // get user by lineId
 export type GetUserByLineIdFn = (
@@ -92,4 +98,33 @@ export const createAdminUser: CreateAdminUserFn = async (conn, input) => {
   await conn.execute(sql, [id, username, password, role, now, cBy, now, cBy]);
   const mabyUser = await getUserById(conn, id);
   return mabyUser;
+};
+
+export type UpdateAdminUserFn = (
+  conn: PoolConnection,
+  input: UpdateAdminUserDAO
+) => Promise<UserDAO | null>;
+export const updateAdminUser: UpdateAdminUserFn = async (conn, input) => {
+  const sql = `
+    UPDATE users
+    SET username=?, password=?, role=?, uBy=?, uAt=?
+    WHERE id=?`;
+
+  const { id, username, password, role, uBy } = input;
+  await conn.execute(sql, [username, password, role, uBy, new Date(), id]);
+  return getUserById(conn, id);
+};
+
+export type DeleteUserByIdFn = (
+  conn: PoolConnection,
+  input: DeleteUserDAO
+) => Promise<unknown>;
+export const deleteUserById: DeleteUserByIdFn = (conn, input) => {
+  const { dBy, id } = input;
+  const sql = `
+    UPDATE users 
+    SET dAt = ?, dBy = ?
+    WHERE id = ?`;
+
+  return conn.execute(sql, [new Date(), dBy, id]);
 };

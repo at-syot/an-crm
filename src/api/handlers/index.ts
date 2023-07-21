@@ -10,3 +10,5 @@ export * from "./getTicketById";
 export * from "./registerAdminUser";
 export * from "./adminAuth";
 export * from "./getUserById";
+export * from "./updateAdminUserById";
+export * from "./deleteUserById";

@@ -17,6 +17,11 @@ export type CreateAdminUserDAO = Pick<
   UserDAO,
   "username" | "password" | "role" | "cBy"
 >;
+export type UpdateAdminUserDAO = Pick<
+  UserDAO,
+  "id" | "username" | "password" | "role" | "uBy"
+>;
+export type DeleteUserDAO = Pick<UserDAO, "dBy" | "id">;
 
 // tickets
 export type TicketDAO = Ticket;
