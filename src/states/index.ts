@@ -14,6 +14,7 @@ export const ticketsWithImagesAtom = atom<AllTicketsWithImagesDTO>([]);
 // application states
 export const fetchingAtom = atom(false);
 export const lineAccessTokenAtom = atom<string | undefined>("");
+export const adminAccessTokenAtom = atom<string>("");
 export const viewingTicketAtom = atom<TicketWithImagesDTO | undefined>(
   undefined
 );

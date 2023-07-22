@@ -1,9 +1,5 @@
-import {} from "@mui/material";
+import AdminAuth from "../../src/components/AdminAuth";
 
-export default function AdminAuth() {
-  return (
-    <>
-      <div>admin auth</div>
-    </>
-  );
+export default function AdminAuthPage() {
+  return <AdminAuth />;
 }
