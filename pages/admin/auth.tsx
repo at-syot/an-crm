@@ -1,3 +1,5 @@
+import {} from "@mui/material";
+
 export default function AdminAuth() {
   return (
     <>
