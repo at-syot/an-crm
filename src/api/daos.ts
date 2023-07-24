@@ -5,6 +5,7 @@ import type {
   User,
   ApiAnypayUser,
   IssueTopic,
+  UserSession,
 } from "./domains";
 
 // users.apianypay
@@ -22,6 +23,10 @@ export type UpdateAdminUserDAO = Pick<
   "id" | "username" | "password" | "role" | "uBy"
 >;
 export type DeleteUserDAO = Pick<UserDAO, "dBy" | "id">;
+
+// user_sessions
+export type UserSessionDAO = UserSession;
+export type CreateUserSessionDAO = Pick<UserSessionDAO, "token" | "userId">;
 
 // tickets
 export type TicketDAO = Ticket;

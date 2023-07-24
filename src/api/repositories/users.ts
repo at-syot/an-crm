@@ -128,3 +128,18 @@ export const deleteUserById: DeleteUserByIdFn = (conn, input) => {
 
   return conn.execute(sql, [new Date(), dBy, id]);
 };
+
+type GetAdminUsersFn = (
+  conn: PoolConnection,
+  role: UserRole
+) => Promise<UserDAO[]>;
+export const getAdminUsers: GetAdminUsersFn = async (conn, role) => {
+  const superAdminUpper = () => role == "system" || role == "super-admin";
+  const sql = superAdminUpper()
+    ? `SELECT * FROM users WHERE role != 'client'`
+    : `SELECT * FROM users WHERE role = 'admin'`;
+
+  const [records] = await conn.query(sql);
+  const admins = records as UserDAO[];
+  return admins;
+};

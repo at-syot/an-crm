@@ -2,7 +2,9 @@ import { NextApiRequest, NextApiResponse } from "next";
 
 import * as db from "../database";
 import * as userRepo from "../repositories/users";
+import * as userSessioinRepo from "../repositories/userSessions";
 import * as encryptionUtils from "../../utils/encryption";
+import * as responseHelper from "./helpers/response";
 import joi from "joi";
 
 const schema = joi.object({
@@ -14,6 +16,9 @@ const schema = joi.object({
  * validate password
  * check user role
  * sign jwt
+ * create user session record
+ *   - jwt, userId, cAt
+ *
  * @returns jwt as [accessToken: string]
  */
 export const adminAuth = async (req: NextApiRequest, res: NextApiResponse) => {
@@ -23,27 +28,34 @@ export const adminAuth = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     const { error } = schema.validate(req.body);
     if (error) {
-      return res.status(422).json({ errors: [{ message: "invalid body" }] });
+      return responseHelper.unProcessableEntity(res);
     }
 
     const { username, password } = req.body;
     const indbUser = await userRepo.getUserByUsername(conn, String(username));
     if (!indbUser) {
-      return res.status(404).json({ errors: [{ message: "user not found" }] });
+      return responseHelper.resourceNotFound(res);
     }
 
     const hashed = indbUser.password;
     const validPW = await encryptionUtils.validatePw(String(password), hashed);
     if (!validPW) {
-      return res.status(401).json({ errors: [{ message: "unauthorized" }] });
+      return responseHelper.unProcessableEntity(res);
     }
 
     const { role } = indbUser;
     if (role == "client") {
-      return res.status(401).json({ errors: [{ message: "unauthorized" }] });
+      return responseHelper.unProcessableEntity(res);
     }
 
     const accessToken = encryptionUtils.signJWT({ role, username });
+    const { id: userId } = indbUser;
+    await userSessioinRepo.createUserSession(conn, {
+      userId,
+      token: accessToken,
+    });
+    await conn.commit();
+
     return res.json({
       message: "admin authentication successful",
       data: { accessToken },

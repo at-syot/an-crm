@@ -26,6 +26,19 @@ export default async function migrate(
         PRIMARY KEY(id)
     )`;
 
+  const createUserSessionTblSQL = `
+    CREATE TABLE IF NOT EXISTS user_sessions (
+      sid int NOT NULL AUTO_INCREMENT,
+      token VARCHAR(255),
+      userId VARCHAR(255),
+      active TINYINT DEFAULT 1,
+      cAt DATETIME,
+      dAt DATETIME,
+
+      PRIMARY KEY(sid)
+    )
+  `;
+
   const createTicketTblSQL = `
     CREATE TABLE IF NOT EXISTS tickets (
         id VARCHAR(36) DEFAULT (uuid()),
@@ -91,6 +104,7 @@ export default async function migrate(
     await conn.beginTransaction();
     const migrations = [
       createUserTblSQL,
+      createUserSessionTblSQL,
       createIssueTopicsTblSQL,
       createTicketTblSQL,
       createTicketImagesTblSQL,

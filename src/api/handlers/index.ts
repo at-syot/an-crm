@@ -12,3 +12,5 @@ export * from "./adminAuth";
 export * from "./getUserById";
 export * from "./updateAdminUserById";
 export * from "./deleteUserById";
+export * from "./getAdminUsers";
+export * from "./adminLogout";

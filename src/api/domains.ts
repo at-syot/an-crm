@@ -33,6 +33,14 @@ export type User = {
   active: boolean;
 } & Unit;
 
+// user_sessions
+export type UserSession = {
+  sid: number;
+  token: string;
+  userId: string;
+  active: boolean;
+} & Pick<Unit, "cAt" | "dAt">;
+
 // tickets
 export type TicketStatus = "new" | "accepted" | "processing" | "finished";
 export type Ticket = {
