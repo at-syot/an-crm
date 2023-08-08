@@ -1,8 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from "next";
-import {
-  isVerifyTokenFail,
-  verifyAdminRoleAccessToken,
-} from "./helpers/verifyAdminRoleAccessToken";
+import { verifyAdminRoleAccessToken } from "./helpers/verifyAdminRoleAccessToken";
 import * as db from "../database";
 import * as userRepo from "../repositories/users";
 import joi from "joi";
@@ -34,7 +31,7 @@ export const updateAdminUserById = async (
   await conn.beginTransaction();
   try {
     const decoded = await verifyAdminRoleAccessToken(req);
-    if (isVerifyTokenFail(decoded)) {
+    if (decoded.status == "inValid") {
       return res.status(401).json({ errors: [{ message: "unauthorized" }] });
     }
 

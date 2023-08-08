@@ -11,15 +11,14 @@ import * as db from "../../database";
  * verify username & role
  * verify userSession
  */
-type VerifyStatus = "valid" | "inValid" | "expired";
-export type VerifyTokenSuccess = {
-  status: VerifyStatus;
+type VerifyTokenSuccess = {
+  status: "valid";
   accessToken: string;
   username: string;
   role: UserRole;
 };
-export type VerifyTokenFail = { status: VerifyStatus };
-export type VerifyTokenResponse = VerifyTokenFail | VerifyTokenSuccess;
+type VerifyTokenFail = { status: "inValid" };
+type VerifyTokenResponse = VerifyTokenFail | VerifyTokenSuccess;
 type VerifyAdminRoleAccessTokenFn = (
   req: NextApiRequest
 ) => Promise<VerifyTokenResponse>;
@@ -55,9 +54,3 @@ export const verifyAdminRoleAccessToken: VerifyAdminRoleAccessTokenFn = async (
     return { status: "inValid" };
   }
 };
-
-export function isVerifyTokenFail(
-  res: VerifyTokenResponse
-): res is VerifyTokenFail {
-  return res.status !== "valid";
-}

@@ -1,4 +1,5 @@
 import { atom } from "jotai";
+import { atomWithStorage } from "jotai/utils";
 import type {
   AllTicketsWithImagesDTO,
   UserDTO,
@@ -14,7 +15,15 @@ export const ticketsWithImagesAtom = atom<AllTicketsWithImagesDTO>([]);
 // application states
 export const fetchingAtom = atom(false);
 export const lineAccessTokenAtom = atom<string | undefined>("");
-export const adminAccessTokenAtom = atom<string>("");
+export const adminAccessTokenAtom = atomWithStorage<string>(
+  "admin-accesstoken",
+  ""
+);
+export const loggedInUserAtom = atomWithStorage<UserDTO | null>(
+  "logged-in-user",
+  null
+);
+
 export const viewingTicketAtom = atom<TicketWithImagesDTO | undefined>(
   undefined
 );
@@ -27,5 +36,8 @@ type RenderingPageAtomValue =
   | "CreateTicket"
   | "TicketViewEdit";
 export const renderingPageAtom = atom<RenderingPageAtomValue>("Entry");
-
 export const openDeleteTicketDialogAtom = atom(false);
+
+export type RenderingAdminPageAtomValue = "Tickets" | "Clients" | "Admins";
+export const renderingAdminPageAtom =
+  atom<RenderingAdminPageAtomValue>("Tickets");

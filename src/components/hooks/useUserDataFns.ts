@@ -1,30 +1,42 @@
-import { useAtom } from "jotai";
-import { fetchingAtom } from "../../states";
+import type { ClientResponse } from "../../client";
+import { UserDTO } from "../../data.types";
 
 export const useUserDataFns = () => {
-  const { adminUserAuth } = useAdminUserAuthAction();
   return {
-    adminUserAuth,
+    authAdminUser,
+    fetchAdminToken,
+    logoutAdminUser,
   };
 };
 
-const useAdminUserAuthAction = () => {
-  const [, setFetching] = useAtom(fetchingAtom);
+async function authAdminUser(
+  username: string,
+  password: string
+): Promise<ClientResponse<{ accessToken: string }>> {
+  const response = await fetch("/api/admins/auth", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ username, password }),
+  });
+  const json = await response.json();
+  return json;
+}
 
-  const doAdminUserAuth = async (username: string, password: string) => {
-    setFetching(true);
-    const response = await fetch("/api/admins/auth", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ username, password }),
-    });
-    const json: unknown = await response.json();
-    setFetching(false);
+async function fetchAdminToken(
+  accessToken: string
+): Promise<ClientResponse<UserDTO>> {
+  const response = await fetch("/api/admins/token", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authentication: `Bearer ${accessToken}`,
+    },
+  });
 
-    console.log(response, json);
-    return json;
-  };
-  return { adminUserAuth: doAdminUserAuth };
-};
+  const json = await response.json();
+  return json;
+}
+
+function logoutAdminUser(accessToken: string) {}

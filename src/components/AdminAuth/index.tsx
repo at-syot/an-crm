@@ -9,16 +9,21 @@ import {
 } from "@mui/material";
 import { useUserDataFns } from "../hooks/useUserDataFns";
 import { useRef, useState } from "react";
-import { isClientFailResponse, isClientSuccessResponse } from "../../client";
 import { useAtom } from "jotai";
-import { adminAccessTokenAtom } from "../../states";
+import {
+  adminAccessTokenAtom,
+  fetchingAtom,
+  loggedInUserAtom,
+} from "../../states";
 import { useRouter } from "next/router";
 
 export default function AdminAuth() {
-  const { adminUserAuth } = useUserDataFns();
+  const { authAdminUser, fetchAdminToken } = useUserDataFns();
   const router = useRouter();
 
+  const [, setFetching] = useAtom(fetchingAtom);
   const [, setAdminAT] = useAtom(adminAccessTokenAtom);
+  const [, setLoggedInUser] = useAtom(loggedInUserAtom);
   const [authStatus, setAuthStatus] = useState<"success" | "error">();
   const [showAuthStatus, setShowAuthStatus] = useState(false);
   const usernameRef = useRef<HTMLInputElement>();
@@ -30,27 +35,34 @@ export default function AdminAuth() {
     if (!usernameElmt || !passwordElmt) return;
     setShowAuthStatus(false);
 
+    setFetching(true); // fetch start
     const { value: username } = usernameElmt;
     const { value: password } = passwordElmt;
-    const resp = await adminUserAuth(username, password);
-
+    const resp = await authAdminUser(username, password);
     setShowAuthStatus(true);
-    if (isClientFailResponse(resp)) {
+    if (resp.status === "fail") {
       setAuthStatus("error");
       return;
     }
 
-    if (isClientSuccessResponse<{ accessToken: string }>(resp)) {
-      if (!resp.data) return;
-      const { accessToken } = resp.data;
+    const { accessToken } = resp.data!;
+    const userInfoResponse = await fetchAdminToken(accessToken);
+    setFetching(false); // fetch done
 
-      setAuthStatus("success");
-      setTimeout(() => {
-        setShowAuthStatus(false);
-        setAdminAT(accessToken);
-        router.push("/admin");
-      }, 3000);
+    if (userInfoResponse.status === "fail") {
+      setAuthStatus("error");
+      return;
     }
+    const user = userInfoResponse.data!;
+
+    setAuthStatus("success");
+    setTimeout(() => {
+      setShowAuthStatus(false);
+      setAdminAT(accessToken);
+      setLoggedInUser(user);
+
+      router.push("/admin");
+    }, 3000);
   }
 
   return (
@@ -79,8 +91,13 @@ export default function AdminAuth() {
           maxWidth={"640px"}
           spacing={4}
         >
-          <Typography variant="h3" textAlign={"center"} marginTop={0}>
-            ANP admin auth
+          <Typography
+            variant="h3"
+            textAlign={"center"}
+            marginTop={0}
+            style={{ color: "blue" }}
+          >
+            ANP Admin Authentication
           </Typography>
 
           <TextField

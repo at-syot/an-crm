@@ -1,10 +1,6 @@
 import { NextApiRequest, NextApiResponse } from "next";
 import { unauthorized } from "./helpers/response";
-import {
-  verifyAdminRoleAccessToken,
-  isVerifyTokenFail,
-} from "./helpers/verifyAdminRoleAccessToken";
-import type { VerifyTokenSuccess } from "./helpers/verifyAdminRoleAccessToken";
+import { verifyAdminRoleAccessToken } from "./helpers/verifyAdminRoleAccessToken";
 import * as userRepo from "../repositories/users";
 import * as db from "../database";
 
@@ -18,11 +14,11 @@ export async function adminToken(req: NextApiRequest, res: NextApiResponse) {
 
   try {
     const decoded = await verifyAdminRoleAccessToken(req);
-    if (isVerifyTokenFail(decoded)) {
+    if (decoded.status == "inValid") {
       return unauthorized(res);
     }
 
-    const { username } = decoded as VerifyTokenSuccess;
+    const { username } = decoded;
     const user = await userRepo.getUserByUsername(conn, username);
 
     return res.json({ message: "", data: user });

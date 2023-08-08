@@ -1,5 +1,12 @@
-export type ClientFailResponse = { errors: { message?: string }[] };
-export type ClientSuccessResponse<DT> = { message: string; data?: DT };
+export type ClientFailResponse = {
+  status: "fail";
+  errors: { message?: string }[];
+};
+export type ClientSuccessResponse<DT> = {
+  status: "success";
+  message: string;
+  data?: DT;
+};
 export type ClientResponse<DT> = ClientFailResponse | ClientSuccessResponse<DT>;
 
 export function isClientFailResponse(
